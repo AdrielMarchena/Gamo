@@ -1,0 +1,21 @@
+{
+    "Gamo C Header": {
+        "prefix": "gamoheader",
+        "body": [
+            "/*",
+            " * ${TM_FILENAME}",
+            " * Gamo",
+            " *",
+            " * Copyright (c) ${CURRENT_YEAR} Adriel Marchena",
+            " *",
+            " * Licensed under the MIT License.",
+            " * See LICENSE file in the project root for full license information.",
+            " *",
+            " * Description:",
+            " *   ${1:Description}",
+            " */",
+            ""
+        ],
+        "description": "Insert Gamo file header"
+    }
+}
