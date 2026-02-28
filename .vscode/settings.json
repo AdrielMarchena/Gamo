@@ -1,0 +1,8 @@
+{
+  "editor.formatOnSave": true,
+  "C_Cpp.formatting": "clangFormat",
+  "clangd.arguments": [
+    "--clang-tidy"
+  ],
+  "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
+}

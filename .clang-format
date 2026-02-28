@@ -1,0 +1,18 @@
+BasedOnStyle: LLVM
+
+Language: C
+Standard: C17
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+BreakBeforeBraces: Allman
+
+ColumnLimit: 100
+
+PointerAlignment: Left
+
+SortIncludes: true
+
+AllowShortFunctionsOnASingleLine: Empty

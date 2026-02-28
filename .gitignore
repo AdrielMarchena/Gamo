@@ -56,3 +56,9 @@ dkms.conf
 
 # Build folder
 build/
+
+# clangd cache
+.cache/
+
+# clangd index (sometimes here)
+.clangd/
