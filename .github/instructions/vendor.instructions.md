@@ -1,8 +1,21 @@
-# Vendor Libraries
+# Vendor Instructions
 
-All third-party libraries live in /vendor as git submodules.
+## Role
+Vendor contains third-party libraries as git submodules.
 
-Rules:
-- Do not modify vendor source
-- Link using add_subdirectory
-- Use their exported CMake targets
+Location:
+vendor/library_name/
+
+## Rules
+- Never modify vendor code
+- Never reformat vendor code
+- Never apply clang-format to vendor
+- Never apply clang-tidy to vendor
+
+## Integration
+Use add_subdirectory(vendor/library)
+
+Link using exported targets.
+
+Example:
+target_link_libraries(engine PRIVATE glfw)
