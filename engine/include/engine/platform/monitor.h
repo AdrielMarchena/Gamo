@@ -18,59 +18,65 @@ typedef struct EngineMonitor EngineMonitor;
 /*
  * Engine Window Rect Size
  */
-typedef struct EngineWindowRectSize {
-  int width;
-  int height;
+typedef struct EngineWindowRectSize
+{
+    int width;
+    int height;
 } EngineWindowRectSize;
 
 /*
  * Engine Window Content Scale
  */
-typedef struct EngineWindowContentScale {
-  float x;
-  float y;
+typedef struct EngineWindowContentScale
+{
+    float x;
+    float y;
 } EngineWindowContentScale;
 
 /*
  * Engine Monitor Video Mode
  */
-typedef struct EngineMonitorVideoMode {
-  int width;
-  int height;
-  int red_bits;
-  int green_bits;
-  int blue_bits;
-  int refresh_rate;
+typedef struct EngineMonitorVideoMode
+{
+    int width;
+    int height;
+    int red_bits;
+    int green_bits;
+    int blue_bits;
+    int refresh_rate;
 } EngineMonitorVideoMode;
 
 /*
  * Engine Monitor Position
  */
-typedef struct EngineMonitorPosition {
-  int x;
-  int y;
+typedef struct EngineMonitorPosition
+{
+    int x;
+    int y;
 } EngineMonitorPosition;
 
 /*
  * Engine Monitor Work Area
  */
-typedef struct EngineMonitorWorkArea {
-  int x;
-  int y;
-  int width;
-  int height;
+typedef struct EngineMonitorWorkArea
+{
+    int x;
+    int y;
+    int width;
+    int height;
 } EngineMonitorWorkArea;
 
 /*
  * Engine Monitor Info
  */
-typedef struct EngineMonitorInfo {
-  const char *redable_name;
-  EngineWindowRectSize physical_size;
-  EngineWindowContentScale content_scale;
-  EngineMonitorPosition virtual_position;
-  EngineMonitorWorkArea work_area;
-  EngineMonitorVideoMode current_mode;
+typedef struct EngineMonitorInfo
+{
+    const char* redable_name;
+    EngineWindowRectSize physical_size;
+    EngineWindowContentScale content_scale;
+    EngineMonitorPosition virtual_position;
+    EngineMonitorWorkArea work_area;
+    EngineMonitorVideoMode current_mode;
 
-  EngineMonitor *monitor;
+    EngineMonitor* monitor;
 } EngineMonitorInfo;
