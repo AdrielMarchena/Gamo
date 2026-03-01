@@ -1,7 +1,6 @@
 BasedOnStyle: LLVM
 
 Language: C
-Standard: C17
 
 IndentWidth: 4
 TabWidth: 4
@@ -16,3 +15,10 @@ PointerAlignment: Left
 SortIncludes: true
 
 AllowShortFunctionsOnASingleLine: Empty
+
+BraceWrapping:
+  AfterFunction: true
+  AfterControlStatement: true
+  AfterStruct: true
+  AfterEnum: true
+  AfterUnion: true

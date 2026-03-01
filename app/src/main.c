@@ -1,18 +1,17 @@
-#include "engine/platform/window.h"
+#include "engine/application/application.h"
 
-int main(void) {
-  EngineWindow *window = engine_window_create();
-  if (!window) {
-    return -1;
-  }
+static bool app_init(void)
+{
+    return true;
+}
 
-  while (!engine_window_should_close(window)) {
-    engine_gl_basic_clear_for_test();
+static void app_update(float dt) {}
 
-    engine_window_swap_buffers(window);
-    engine_window_poll_events(window);
-  }
+static void app_shutdown(void) {}
 
-  engine_window_destroy(window);
-  return 0;
+int main(void)
+{
+    EngineApp app = {.init = app_init, .update = app_update, .shutdown = app_shutdown};
+
+    return engine_run(&app);
 }
