@@ -12,7 +12,7 @@ ColumnLimit: 100
 
 PointerAlignment: Left
 
-SortIncludes: true
+SortIncludes: false
 
 AllowShortFunctionsOnASingleLine: Empty
 

@@ -4,10 +4,24 @@ add_library(engine STATIC
     ${ENGINE_SOURCES}
 )
 
+target_sources(engine
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/vendor/glad/src/glad.c
+)
+
+target_include_directories(engine
+    PUBLIC
+        include
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/vendor/glad/include
+)
+
 find_package(OpenGL REQUIRED)
 
 target_link_libraries(engine
-    PUBLIC glfw OpenGL::GL
+    PRIVATE
+        glfw
+        OpenGL::GL
 )
 
 target_include_directories(engine

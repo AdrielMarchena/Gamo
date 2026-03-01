@@ -1,5 +1,6 @@
 #include "engine/general.h"
 #include "engine/platform/window.h"
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #define ENGINE_WINDOW_DEFAULT_WIDTH 800
@@ -95,6 +96,8 @@ EngineWindow* engine_window_create()
         glfwTerminate();
         return NULL;
     }
+
+    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
