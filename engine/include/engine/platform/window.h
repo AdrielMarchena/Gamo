@@ -10,6 +10,8 @@
  * in the Software without restriction.
  */
 
+#pragma once
+
 #include "engine/platform/monitor.h"
 #include <stdbool.h>
 

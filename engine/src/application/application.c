@@ -12,7 +12,6 @@ int engine_run(const EngineApp* app)
 
     while (!engine_window_should_close(window))
     {
-
         engine_window_poll_events(window);
 
         if (app->update)

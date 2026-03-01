@@ -10,6 +10,8 @@
  * in the Software without restriction.
  */
 
+#pragma once
+
 /*
  * Engine Monitor Handle
  */
