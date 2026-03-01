@@ -11,8 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -22,8 +21,13 @@ jobs:
           sudo apt install -y \
             build-essential \
             cmake \
-            libglfw3-dev \
-            libgl1-mesa-dev
+            libgl1-mesa-dev \
+            libxkbcommon-dev \
+            libwayland-dev \
+            libxrandr-dev \
+            libxinerama-dev \
+            libxcursor-dev \
+            libxi-dev
 
       - name: Configure
         run: cmake -B build
