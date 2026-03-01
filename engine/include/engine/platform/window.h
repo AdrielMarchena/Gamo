@@ -71,4 +71,6 @@ EngineMonitorInfo* engine_get_monitors(int* count);
  */
 EngineMonitorInfo engine_get_primary_monitor(void);
 
+void engine_toggle_vsync(EngineWindow* window, bool enabled);
+
 void engine_gl_basic_clear_for_test(void);

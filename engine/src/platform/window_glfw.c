@@ -167,6 +167,11 @@ void engine_window_swap_buffers(EngineWindow* window)
     glfwSwapBuffers(window->handle);
 }
 
+void engine_toggle_vsync(EngineWindow* window, bool enabled)
+{
+    glfwSwapInterval(enabled ? 1 : 0);
+}
+
 void engine_gl_basic_clear_for_test()
 {
     glClear(GL_COLOR_BUFFER_BIT);

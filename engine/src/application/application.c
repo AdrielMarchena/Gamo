@@ -13,6 +13,8 @@ int engine_run(const EngineApp* app)
         return -1;
     }
 
+    engine_toggle_vsync(window, true);
+
     engine_log_info("Window created successfully");
 
     if (app->init)
