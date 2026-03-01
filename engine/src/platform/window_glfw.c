@@ -64,6 +64,9 @@ EngineMonitorInfo get_glfw_monitor_info(GLFWmonitor *monitor) {
   info.current_mode.blue_bits = current_mode->blueBits;
   info.current_mode.refresh_rate = current_mode->refreshRate;
 
+  info.monitor = engine_alloc(sizeof(EngineMonitor));
+  info.monitor->handle = monitor;
+
   return info;
 }
 
@@ -74,11 +77,15 @@ EngineWindow *engine_window_create() {
 
   EngineWindow *window = engine_alloc(sizeof(EngineWindow));
 
-  EngineMonitorInfo primary_monitor = engine_get_primary_monitor();
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+  EngineMonitorInfo monitor_info = engine_get_primary_monitor();
 
   window->handle = glfwCreateWindow(
       ENGINE_WINDOW_DEFAULT_WIDTH, ENGINE_WINDOW_DEFAULT_HEIGHT,
-      "Engine Window", primary_monitor.monitor->handle, NULL);
+      "Engine Window", monitor_info.monitor->handle, NULL);
 
   if (!window->handle) {
     free(window);

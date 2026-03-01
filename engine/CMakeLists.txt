@@ -4,8 +4,10 @@ add_library(engine STATIC
     ${ENGINE_SOURCES}
 )
 
+find_package(OpenGL REQUIRED)
+
 target_link_libraries(engine
-    PUBLIC glfw
+    PUBLIC glfw OpenGL::GL
 )
 
 target_include_directories(engine
