@@ -7,6 +7,9 @@ int main(void) {
   }
 
   while (!engine_window_should_close(window)) {
+    engine_gl_basic_clear_for_test();
+
+    engine_window_swap_buffers(window);
     engine_window_poll_events(window);
   }
 

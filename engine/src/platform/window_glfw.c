@@ -81,17 +81,22 @@ EngineWindow *engine_window_create() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  EngineMonitorInfo monitor_info = engine_get_primary_monitor();
-
-  window->handle = glfwCreateWindow(
-      ENGINE_WINDOW_DEFAULT_WIDTH, ENGINE_WINDOW_DEFAULT_HEIGHT,
-      "Engine Window", monitor_info.monitor->handle, NULL);
+  window->handle = glfwCreateWindow(ENGINE_WINDOW_DEFAULT_WIDTH,
+                                    ENGINE_WINDOW_DEFAULT_HEIGHT,
+                                    "Engine Window", NULL, NULL);
 
   if (!window->handle) {
     free(window);
     glfwTerminate();
     return NULL;
   }
+
+  glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
+  EngineMonitorInfo monitor_info = engine_get_primary_monitor();
+
+  glfwSetWindowPos(window->handle, monitor_info.virtual_position.x + 100,
+                   monitor_info.virtual_position.y + 100);
 
   glfwMakeContextCurrent(window->handle);
   return window;
@@ -140,3 +145,9 @@ void engine_window_poll_events(EngineWindow *window) { glfwPollEvents(); }
 bool engine_window_should_close(EngineWindow *window) {
   return glfwWindowShouldClose(window->handle);
 }
+
+void engine_window_swap_buffers(EngineWindow *window) {
+  glfwSwapBuffers(window->handle);
+}
+
+void engine_gl_basic_clear_for_test() { glClear(GL_COLOR_BUFFER_BIT); }

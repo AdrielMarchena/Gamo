@@ -68,3 +68,5 @@ EngineMonitorInfo *engine_get_monitors(int *count);
  * Retrieves the primary monitor.
  */
 EngineMonitorInfo engine_get_primary_monitor(void);
+
+void engine_gl_basic_clear_for_test(void);
