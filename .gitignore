@@ -62,3 +62,6 @@ build/
 
 # clangd index (sometimes here)
 .clangd/
+
+# build win
+build-win/

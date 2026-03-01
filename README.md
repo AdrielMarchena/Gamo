@@ -138,6 +138,25 @@ clang-tidy -p build
 
 ---
 
+## For windows build (Not tested)
+
+```
+sudo dnf install mingw64-gcc mingw64-cmake wine
+```
+
+```
+cmake -B build-win \
+  -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw64.cmake
+```
+
+```
+cmake --build build-win
+```
+
+```
+wine build-win/app/Gamo.exe
+```
+
 ## Architecture
 
 The engine exposes clean interfaces while hiding backend implementations.
