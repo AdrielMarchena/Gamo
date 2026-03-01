@@ -2,6 +2,7 @@
 #include "engine/core/time.h"
 #include "engine/general/logger.h"
 #include "engine/platform/window.h"
+#include "engine/renderer/renderer.h"
 
 int engine_run(const EngineApp* app)
 {
@@ -34,6 +35,8 @@ int engine_run(const EngineApp* app)
 
     engine_time_init();
 
+    engine_renderer_init(window);
+
     engine_log_info("Entering main loop");
     while (!engine_window_should_close(window))
     {
@@ -42,7 +45,10 @@ int engine_run(const EngineApp* app)
         engine_log_status("\rFPS: %f", engine_time_fps());
 
         engine_time_update();
-        engine_window_poll_events(window);
+
+        engine_renderer_clear_color();
+
+        engine_renderer_draw_quad(400, 300, 100, 100);
 
         if (app->update)
         {
@@ -50,6 +56,7 @@ int engine_run(const EngineApp* app)
         }
 
         engine_window_swap_buffers(window);
+        engine_window_poll_events(window);
     }
 
     engine_log_info("\nExiting main loop");

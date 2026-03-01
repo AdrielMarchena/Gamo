@@ -1,5 +1,8 @@
-#include "engine/general.h"
+#include "engine/general/engine_alloc.h"
+#include "engine/general/logger.h"
 #include "engine/platform/window.h"
+
+#include "glad/glad.h"
 #include <GLFW/glfw3.h>
 
 #define ENGINE_WINDOW_DEFAULT_WIDTH 800
@@ -91,12 +94,11 @@ EngineWindow* engine_window_create()
 
     if (!window->handle)
     {
+        engine_log_error("Failed to create GLFW window\n");
         free(window);
         glfwTerminate();
         return NULL;
     }
-
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
     EngineMonitorInfo monitor_info = engine_get_primary_monitor();
 
@@ -104,6 +106,19 @@ EngineWindow* engine_window_create()
                      monitor_info.virtual_position.y + 100);
 
     glfwMakeContextCurrent(window->handle);
+
+    // TODO: Mabe move to another file, glad init
+
+    const int glad_init_result = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
+    if (!glad_init_result)
+    {
+        engine_log_error("Failed to initialize GLAD: %d\n", glad_init_result);
+        free(window);
+        glfwTerminate();
+        return NULL;
+    }
+
     return window;
 }
 
