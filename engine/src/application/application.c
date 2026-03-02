@@ -4,6 +4,18 @@
 #include "engine/platform/window.h"
 #include "engine/renderer/renderer.h"
 
+#include "engine/renderer/mesh.h"
+
+float vertices[] = {
+    // Positions             // Texture Coords (U, V)
+    -0.5f, -0.5f, 0.0f, // Bottom left corner (0)
+    0.5f,  -0.5f, 0.0f, // Bottom right corner (1)
+    0.5f,  0.5f,  0.0f, // Top right corner (2)
+    -0.5f, 0.5f,  0.0f, // Top left corner (3)
+};
+
+unsigned int indices[] = {0, 1, 2, 2, 3, 0};
+
 int engine_run(const EngineApp* app)
 {
     EngineWindow* window = engine_window_create();
@@ -37,6 +49,9 @@ int engine_run(const EngineApp* app)
 
     engine_renderer_init(window);
 
+    const Mesh* demo_mesh = engine_mesh_create(vertices, sizeof(vertices) / sizeof(float), indices,
+                                               sizeof(indices) / sizeof(unsigned int));
+
     engine_log_info("Entering main loop");
     while (!engine_window_should_close(window))
     {
@@ -48,7 +63,7 @@ int engine_run(const EngineApp* app)
 
         engine_renderer_clear_color();
 
-        engine_renderer_draw_quad(400, 300, 100, 100);
+        engine_renderer_draw_mesh(demo_mesh);
 
         if (app->update)
         {

@@ -9,24 +9,20 @@ target_sources(engine
         ${CMAKE_SOURCE_DIR}/vendor/glad/src/glad.c
 )
 
+find_package(OpenGL REQUIRED)
+
 target_include_directories(engine
     PUBLIC
-        include
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
     PRIVATE
         ${CMAKE_SOURCE_DIR}/vendor/glad/include
+        ${CMAKE_SOURCE_DIR}/vendor/cglm/include
 )
-
-find_package(OpenGL REQUIRED)
 
 target_link_libraries(engine
     PRIVATE
         glfw
         OpenGL::GL
-)
-
-target_include_directories(engine
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 target_precompile_headers(engine
