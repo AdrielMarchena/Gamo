@@ -61,14 +61,16 @@ int engine_run(const EngineApp* app)
 
         engine_time_update();
 
-        engine_renderer_clear_color();
-
-        engine_renderer_draw_mesh(demo_mesh);
-
         if (app->update)
         {
             app->update(delta_time);
         }
+
+        engine_renderer_begin();
+
+        engine_renderer_draw_mesh(demo_mesh);
+
+        engine_renderer_end();
 
         engine_window_swap_buffers(window);
         engine_window_poll_events(window);

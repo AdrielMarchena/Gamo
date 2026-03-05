@@ -32,6 +32,14 @@ void engine_log_error(const char* fmt, ...)
     va_end(args);
 }
 
+void engine_log_warning(const char* fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    engine_log(stdout, "WARNING", fmt, args);
+    va_end(args);
+}
+
 void engine_log_debug(const char* fmt, ...)
 {
     va_list args;
