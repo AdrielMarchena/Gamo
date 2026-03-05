@@ -131,6 +131,7 @@ void shader_load_all_from_directory(const char* directory)
     DIR* dir = opendir(directory);
     if (!dir)
     {
+        engine_log_error("Failed to open shader directory: %s\n", directory);
         return;
     }
 

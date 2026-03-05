@@ -9,6 +9,12 @@ target_sources(engine
         ${CMAKE_SOURCE_DIR}/vendor/glad/src/glad.c
 )
 
+target_sources(engine
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/vendor/glad/src/glad.c
+        ${CMAKE_SOURCE_DIR}/vendor/flecs/distr/flecs.c
+)
+
 find_package(OpenGL REQUIRED)
 
 target_include_directories(engine
@@ -17,6 +23,7 @@ target_include_directories(engine
     PRIVATE
         ${CMAKE_SOURCE_DIR}/vendor/glad/include
         ${CMAKE_SOURCE_DIR}/vendor/cglm/include
+        ${CMAKE_SOURCE_DIR}/vendor/flecs/include
 )
 
 target_link_libraries(engine

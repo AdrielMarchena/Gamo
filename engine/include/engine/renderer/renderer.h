@@ -1,6 +1,8 @@
 #include "engine/platform/window.h"
 #include <stdbool.h>
 
+#include <cglm/cglm.h>
+
 #include "mesh.h"
 
 // Renderer API
@@ -15,7 +17,7 @@ void engine_renderer_end(void);
 
 void engine_renderer_draw_quad(float xpos, float ypos, float width, float height);
 
-void engine_renderer_draw_mesh(const Mesh* mesh);
+void engine_renderer_draw_mesh(const mat4* model, const Mesh* mesh);
 // Viewport
 
 void engine_renderer_resize(int width, int height);

@@ -2,17 +2,13 @@
 #include "engine/core/time.h"
 #include "engine/general/logger.h"
 #include "engine/platform/window.h"
+#include "engine/ecs/scene.h"
 #include "engine/renderer/renderer.h"
 
-#include "engine/renderer/mesh.h"
+#include "engine/ecs/components/transform.h"
+#include "engine/ecs/components/mesh.h"
 
-float vertices[] = {
-    // Positions             // Texture Coords (U, V)
-    -0.5f, -0.5f, 0.0f, // Bottom left corner (0)
-    0.5f,  -0.5f, 0.0f, // Bottom right corner (1)
-    0.5f,  0.5f,  0.0f, // Top right corner (2)
-    -0.5f, 0.5f,  0.0f, // Top left corner (3)
-};
+float vertices[] = {0.0f, 0.0f, 0.0f, 100.0f, 0.0f, 0.0f, 100.0f, 100.0f, 0.0f, 0.0f, 100.0f, 0.0f};
 
 unsigned int indices[] = {0, 1, 2, 2, 3, 0};
 
@@ -49,8 +45,27 @@ int engine_run(const EngineApp* app)
 
     engine_renderer_init(window);
 
-    const Mesh* demo_mesh = engine_mesh_create(vertices, sizeof(vertices) / sizeof(float), indices,
-                                               sizeof(indices) / sizeof(unsigned int));
+    EngineScene* scene = engine_scene_create();
+
+    if (scene == NULL)
+    {
+        engine_log_error("Failed to create scene");
+        return -1;
+    }
+
+    { // For testing
+        EngineEntity entity = engine_scene_entity_create(scene);
+
+        TransformComponent* trans = engine_entity_add(entity, TransformComponent);
+        trans->translation[0] = 300.0F;
+        trans->translation[1] = 200.0F;
+
+        trans->scale[0] = 1.0F;
+        trans->scale[1] = 1.0F;
+
+        MeshComponent* mesh = engine_entity_add(entity, MeshComponent);
+        mesh->mesh = engine_mesh_create(vertices, sizeof(vertices), indices, sizeof(indices));
+    }
 
     engine_log_info("Entering main loop");
     while (!engine_window_should_close(window))
@@ -66,11 +81,7 @@ int engine_run(const EngineApp* app)
             app->update(delta_time);
         }
 
-        engine_renderer_begin();
-
-        engine_renderer_draw_mesh(demo_mesh);
-
-        engine_renderer_end();
+        engine_scene_update(scene, delta_time);
 
         engine_window_swap_buffers(window);
         engine_window_poll_events(window);

@@ -33,7 +33,9 @@ bool engine_renderer_init()
     glm_ortho(0.0f, (float)800, (float)600, 0.0f, -1.0f, 1.0f, projection);
     engine_shader_registry_init();
 
-    shader_load_all_from_directory("app/shaders");
+    shader_load_all_from_directory("shaders");
+
+    glDisable(GL_DEPTH_TEST);
 
     check_gl_error(__FILE__, __LINE__);
     return true;
@@ -42,10 +44,13 @@ bool engine_renderer_init()
 void engine_renderer_begin(void)
 {
     engine_renderer_clear_color();
-    engine_gl_shader_bind(engine_shader_registry_get("basic"));
-    engine_gl_shader_set_projection(engine_shader_registry_get("basic"), &projection);
+    Shader* shader = engine_shader_registry_get("basic");
+
+    engine_gl_shader_bind(shader);
+    engine_gl_shader_set_projection(shader, &projection);
     check_gl_error(__FILE__, __LINE__);
-    engine_gl_shader_set_view(engine_shader_registry_get("basic"), &view);
+
+    engine_gl_shader_set_view(shader, &view);
     check_gl_error(__FILE__, __LINE__);
 }
 
@@ -60,17 +65,13 @@ void engine_renderer_shutdown(void)
     engine_shader_registry_destroy();
 }
 
-void engine_renderer_draw_mesh(const Mesh* mesh)
+void engine_renderer_draw_mesh(const mat4* model, const Mesh* mesh)
 {
     check_gl_error(__FILE__, __LINE__);
+    Shader* shader = engine_shader_registry_get("basic");
+    engine_gl_shader_bind(shader);
 
-    mat4 model;
-    glm_mat4_identity(model);
-
-    glm_translate(model, (vec3){0, 0, 0.0f});
-    glm_scale(model, (vec3){1, 1, 1.0f});
-
-    engine_gl_shader_set_model(engine_shader_registry_get("basic"), &model);
+    engine_gl_shader_set_model(shader, model);
 
     engine_gl_vertex_array_bind(&mesh->vao);
     check_gl_error(__FILE__, __LINE__);
