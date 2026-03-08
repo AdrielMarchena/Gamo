@@ -38,9 +38,13 @@ void engine_ecs_render_system(ecs_iter_t* iter)
         mat4 model;
         transform_to_model_matrix(trans, model);
 
+        engine_renderer_handle_ui_input();
+
         engine_renderer_begin();
 
         engine_renderer_draw_mesh(&model, mesh->mesh);
+
+        engine_renderer_draw_ui();
 
         engine_renderer_end();
     }

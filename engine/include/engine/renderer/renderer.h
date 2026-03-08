@@ -18,8 +18,15 @@ void engine_renderer_end(void);
 void engine_renderer_draw_quad(float xpos, float ypos, float width, float height);
 
 void engine_renderer_draw_mesh(const mat4* model, const Mesh* mesh);
+
 // Viewport
 
 void engine_renderer_resize(int width, int height);
 void engine_renderer_set_clear_color(float red, float green, float blue, float alpha);
 void engine_renderer_clear_color(void);
+
+// UI Integration - Handled internally by the engine
+// UI is automatically initialized and rendered through the backend system
+
+void engine_renderer_handle_ui_input(void);
+void engine_renderer_draw_ui(void);

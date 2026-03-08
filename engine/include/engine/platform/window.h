@@ -73,4 +73,6 @@ EngineMonitorInfo engine_get_primary_monitor(void);
 
 void engine_toggle_vsync(EngineWindow* window, bool enabled);
 
+void* engine_window_get_native_handle(EngineWindow* window);
+
 void engine_gl_basic_clear_for_test(void);

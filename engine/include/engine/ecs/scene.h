@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stddef.h>
 
 #define engine_entity_add(entity, T) (T*)engine_entity_add_component(entity, sizeof(T), #T)
 

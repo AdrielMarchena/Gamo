@@ -1,3 +1,7 @@
+#include "engine/platform/window.h"
+#include "engine/renderer/renderer.h"
+#include "engine/ui/ui.h"
+
 #include "cglm/types.h"
 #include "glad/glad.h"
 
@@ -5,7 +9,6 @@
 #include "gl/shader.h"
 #include "gl/shader_registry.h"
 #include "mesh_opengl.h"
-#include <math.h>
 
 static unsigned int gl_clear_flags = GL_COLOR_BUFFER_BIT;
 
@@ -27,8 +30,12 @@ void engine_renderer_clear_color(void)
     check_gl_error(__FILE__, __LINE__);
 }
 
-bool engine_renderer_init()
+bool engine_renderer_init(EngineWindow* window)
 {
+    // Initialize UI system
+    void* glfw_window = engine_window_get_native_handle(window);
+    engine_ui_setup_window(glfw_window);
+
     glm_mat4_identity(view);
     glm_ortho(0.0f, (float)800, (float)600, 0.0f, -1.0f, 1.0f, projection);
     engine_shader_registry_init();
@@ -36,7 +43,6 @@ bool engine_renderer_init()
     shader_load_all_from_directory("shaders");
 
     glDisable(GL_DEPTH_TEST);
-
     check_gl_error(__FILE__, __LINE__);
     return true;
 }
@@ -54,15 +60,12 @@ void engine_renderer_begin(void)
     check_gl_error(__FILE__, __LINE__);
 }
 
-void engine_renderer_end(void)
-{
-    // Currently, we don't have any specific end operations, but this function can be used for
-    // future extensions.
-}
+void engine_renderer_end(void) {}
 
 void engine_renderer_shutdown(void)
 {
     engine_shader_registry_destroy();
+    engine_ui_shutdown();
 }
 
 void engine_renderer_draw_mesh(const mat4* model, const Mesh* mesh)
@@ -84,4 +87,14 @@ void engine_renderer_set_clear_color(float red, float green, float blue, float a
 {
     glClearColor(red, green, blue, alpha);
     check_gl_error(__FILE__, __LINE__);
+}
+
+void engine_renderer_handle_ui_input(void)
+{
+    engine_ui_new_frame();
+}
+
+void engine_renderer_draw_ui(void)
+{
+    engine_ui_render();
 }

@@ -4,6 +4,7 @@
 #include "engine/platform/window.h"
 #include "engine/ecs/scene.h"
 #include "engine/renderer/renderer.h"
+#include "engine/ui/ui.h"
 
 #include "engine/ecs/components/transform.h"
 #include "engine/ecs/components/mesh.h"
@@ -43,6 +44,8 @@ int engine_run(const EngineApp* app)
 
     engine_time_init();
 
+    engine_ui_init();
+
     engine_renderer_init(window);
 
     EngineScene* scene = engine_scene_create();
@@ -76,6 +79,8 @@ int engine_run(const EngineApp* app)
 
         engine_time_update();
 
+        engine_window_poll_events(window);
+
         if (app->update)
         {
             app->update(delta_time);
@@ -84,7 +89,6 @@ int engine_run(const EngineApp* app)
         engine_scene_update(scene, delta_time);
 
         engine_window_swap_buffers(window);
-        engine_window_poll_events(window);
     }
 
     engine_log_info("\nExiting main loop");
