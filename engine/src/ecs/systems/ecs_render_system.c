@@ -28,8 +28,6 @@ void engine_ecs_render_system(ecs_iter_t* iter)
     TransformComponent* transforms = ecs_field(iter, TransformComponent, 0);
     MeshComponent* meshes = ecs_field(iter, MeshComponent, 1);
 
-    printf("iter count: %d\n", iter->count);
-
     for (int i = 0; i < iter->count; i++)
     {
         TransformComponent* trans = &transforms[i];

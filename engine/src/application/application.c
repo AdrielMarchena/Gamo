@@ -70,12 +70,12 @@ int engine_run(const EngineApp* app)
         mesh->mesh = engine_mesh_create(vertices, sizeof(vertices), indices, sizeof(indices));
     }
 
+    uint64_t frame_count = 0;
+
     engine_log_info("Entering main loop");
     while (!engine_window_should_close(window))
     {
         const float delta_time = engine_time_delta();
-
-        engine_log_status("\rFPS: %f", engine_time_fps());
 
         engine_time_update();
 
@@ -83,12 +83,17 @@ int engine_run(const EngineApp* app)
 
         if (app->update)
         {
-            app->update(delta_time);
+            app->update((UpdateData){
+                .delta_time = delta_time,
+                .frame_count = frame_count,
+                .frame_rate = engine_time_fps(),
+            });
         }
 
         engine_scene_update(scene, delta_time);
 
         engine_window_swap_buffers(window);
+        frame_count++;
     }
 
     engine_log_info("\nExiting main loop");

@@ -6,10 +6,10 @@ static bool app_init(void)
     return true;
 }
 
-static void app_update(float dt)
+static void app_update(UpdateData update_data)
 {
     struct nk_context* ctx = engine_nuklear_get_context();
-    render_app_ui(ctx);
+    render_app_ui(ctx, update_data);
 }
 
 static void app_shutdown(void) {}
