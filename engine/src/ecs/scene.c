@@ -4,6 +4,7 @@
 
 #include "engine/ecs/components/transform.h"
 #include "engine/ecs/components/mesh.h"
+#include "engine/ecs/components/texture.h"
 
 #include "ecs_world.h"
 
@@ -22,13 +23,15 @@ static void register_components(EngineEcsWorld* world)
 
     ECS_COMPONENT(flecs, TransformComponent);
     ECS_COMPONENT(flecs, MeshComponent);
+    ECS_COMPONENT(flecs, TextureComponent);
 }
 
 static void register_render_systems(EngineEcsWorld* world)
 {
     ecs_world_t* flecs = world->handle;
 
-    ECS_SYSTEM(flecs, engine_ecs_render_system, EcsOnUpdate, TransformComponent, MeshComponent);
+    ECS_SYSTEM(flecs, engine_ecs_render_system, EcsOnUpdate, TransformComponent, MeshComponent,
+               ?TextureComponent);
 }
 
 EngineScene* engine_scene_create(void)

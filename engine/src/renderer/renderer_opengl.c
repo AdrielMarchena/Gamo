@@ -1,5 +1,6 @@
 #include "engine/platform/window.h"
 #include "engine/renderer/renderer.h"
+#include "engine/renderer/texture.h"
 #include "engine/ui/ui.h"
 
 #include "cglm/types.h"
@@ -75,6 +76,27 @@ void engine_renderer_draw_mesh(const mat4* model, const Mesh* mesh)
     engine_gl_shader_bind(shader);
 
     engine_gl_shader_set_model(shader, model);
+
+    engine_gl_vertex_array_bind(&mesh->vao);
+    check_gl_error(__FILE__, __LINE__);
+
+    glDrawElements(GL_TRIANGLES, (GLsizei)mesh->index_count, GL_UNSIGNED_INT, 0);
+    check_gl_error(__FILE__, __LINE__);
+}
+
+void engine_renderer_draw_mesh_with_texture(const mat4* model, const Mesh* mesh, Texture* texture,
+                                            const vec4* color)
+{
+    check_gl_error(__FILE__, __LINE__);
+    Shader* shader = engine_shader_registry_get("basic");
+    engine_gl_shader_bind(shader);
+
+    engine_texture_bind(texture, 0);
+
+    engine_gl_shader_set_model(shader, model);
+
+    engine_gl_shader_set_texture(shader, texture);
+    engine_gl_shader_set_color(shader, color);
 
     engine_gl_vertex_array_bind(&mesh->vao);
     check_gl_error(__FILE__, __LINE__);

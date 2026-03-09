@@ -1,15 +1,12 @@
 #version 460 core
 
-uniform mat4 u_Model;
-uniform mat4 u_View;
-uniform mat4 u_Projection;
+in vec2 v_TexCoord;
 
-in vec3 v_FragPos;
-in vec3 v_Normal;
+uniform sampler2D u_Texture;
 
 out vec4 FragColor;
 
 void main()
 {
-    FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    FragColor = texture(u_Texture, v_TexCoord);
 }

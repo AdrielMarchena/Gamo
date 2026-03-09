@@ -1,9 +1,11 @@
 #include "ecs_render_system.h"
 
+#include "engine/ecs/components/texture.h"
 #include "engine/ecs/components/transform.h"
 #include "engine/ecs/components/mesh.h"
 
 #include "engine/renderer/renderer.h"
+#include "engine/general/assert.h"
 
 #include <cglm/cglm.h>
 #include <flecs.h>
@@ -24,9 +26,12 @@ void transform_to_model_matrix(const TransformComponent* trans, mat4 model)
 
 void engine_ecs_render_system(ecs_iter_t* iter)
 {
-    printf("rendering system\n");
     TransformComponent* transforms = ecs_field(iter, TransformComponent, 0);
     MeshComponent* meshes = ecs_field(iter, MeshComponent, 1);
+    TextureComponent* textures = ecs_field(iter, TextureComponent, 2);
+
+    ENGINE_ASSERT(transforms != NULL, "Transforms component is NULL");
+    ENGINE_ASSERT(meshes != NULL, "Meshes component is NULL");
 
     for (int i = 0; i < iter->count; i++)
     {
@@ -39,6 +44,16 @@ void engine_ecs_render_system(ecs_iter_t* iter)
         engine_renderer_handle_ui_input();
 
         engine_renderer_begin();
+
+        if (textures && textures[i].texture)
+        {
+            engine_renderer_draw_mesh_with_texture(&model, mesh->mesh, textures[i].texture,
+                                                   &textures[i].color);
+        }
+        else
+        {
+            engine_renderer_draw_mesh(&model, mesh->mesh);
+        }
 
         engine_renderer_draw_mesh(&model, mesh->mesh);
 

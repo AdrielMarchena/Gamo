@@ -1,16 +1,17 @@
 #pragma once
 
 #include <cglm/cglm.h>
-
-#include <glad/glad.h>
+#include "engine/renderer/texture.h"
 
 typedef struct Shader
 {
-    GLuint id;
+    uint32_t id;
 
-    GLint loc_model;
-    GLint loc_view;
-    GLint loc_projection;
+    int32_t loc_model;
+    int32_t loc_view;
+    int32_t loc_projection;
+    int32_t loc_texture;
+    int32_t loc_color;
 } Shader;
 
 Shader* engine_gl_shader_create(const char* vertex_source, const char* fragment_source);
@@ -23,5 +24,8 @@ Shader* engine_gl_shader_create_from_files(const char* vertex_path, const char* 
 void engine_gl_shader_set_model(Shader* shader, const mat4* model);
 void engine_gl_shader_set_view(Shader* shader, const mat4* view);
 void engine_gl_shader_set_projection(Shader* shader, const mat4* projection);
+
+void engine_gl_shader_set_texture(Shader* shader, const Texture* texture);
+void engine_gl_shader_set_color(Shader* shader, const vec4* color);
 
 void shader_load_all_from_directory(const char* directory);

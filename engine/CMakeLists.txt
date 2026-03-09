@@ -21,6 +21,7 @@ target_include_directories(engine
         ${CMAKE_SOURCE_DIR}/vendor/flecs/include
         ${CMAKE_SOURCE_DIR}/vendor/nuklear
         ${CMAKE_SOURCE_DIR}/vendor/nuklear/demo/glfw_opengl3
+        ${CMAKE_SOURCE_DIR}/vendor/stb
 )
 
 target_link_libraries(engine

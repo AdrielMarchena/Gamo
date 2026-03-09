@@ -17,8 +17,11 @@ Mesh* engine_mesh_create(const float* vertices, size_t vertex_count, const unsig
     mesh->vbo = *engine_gl_vertex_buffer_create(vertices, vertex_count * sizeof(float));
     mesh->ebo = *engine_gl_element_array_buffer_create(indices, index_count * sizeof(unsigned int));
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     mesh->index_count = (unsigned int)index_count;
 

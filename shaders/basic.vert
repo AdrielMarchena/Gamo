@@ -1,16 +1,17 @@
 #version 460 core
 
 layout(location = 0) in vec3 aPosition;
+layout(location = 1) in vec2 aTexCoord;
 
 uniform mat4 u_Model;
 uniform mat4 u_View;
 uniform mat4 u_Projection;
 
-out vec3 vFragPos;
+out vec2 v_TexCoord;
 
 void main()
 {
-    vFragPos = vec3(u_Model * vec4(aPosition, 1.0));
-    
+    v_TexCoord = aTexCoord;
+
     gl_Position = u_Projection * u_View * u_Model * vec4(aPosition, 1.0);
 }

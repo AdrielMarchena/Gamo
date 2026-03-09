@@ -10,3 +10,6 @@
 [submodule "vendor/nuklear"]
 	path = vendor/nuklear
 	url = https://github.com/Immediate-Mode-UI/Nuklear.git
+[submodule "vendor/stb"]
+	path = vendor/stb
+	url = https://github.com/nothings/stb.git

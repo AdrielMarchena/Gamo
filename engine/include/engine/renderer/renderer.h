@@ -1,4 +1,6 @@
 #include "engine/platform/window.h"
+#include "engine/renderer/texture.h"
+
 #include <stdbool.h>
 
 #include <cglm/cglm.h>
@@ -18,6 +20,8 @@ void engine_renderer_end(void);
 void engine_renderer_draw_quad(float xpos, float ypos, float width, float height);
 
 void engine_renderer_draw_mesh(const mat4* model, const Mesh* mesh);
+void engine_renderer_draw_mesh_with_texture(const mat4* model, const Mesh* mesh, Texture* texture,
+                                            const vec4* color);
 
 // Viewport
 

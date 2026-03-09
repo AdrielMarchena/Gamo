@@ -39,6 +39,9 @@ Shader* engine_gl_shader_create(const char* vertex_source, const char* fragment_
     shader->loc_view = glGetUniformLocation(shader->id, U_VIEW);
     shader->loc_projection = glGetUniformLocation(shader->id, U_PROJECTION);
 
+    shader->loc_texture = glGetUniformLocation(shader->id, U_TEXTURE);
+    shader->loc_color = glGetUniformLocation(shader->id, U_COLOR);
+
     return shader;
 }
 
@@ -124,6 +127,26 @@ void engine_gl_shader_set_projection(Shader* shader, const mat4* projection)
         return;
     }
     glUniformMatrix4fv(shader->loc_projection, 1, GL_FALSE, (const GLfloat*)projection);
+}
+
+void engine_gl_shader_set_texture(Shader* shader, const Texture* texture)
+{
+    if (shader->loc_texture == -1)
+    {
+        engine_log_warning("Texture uniform not found in shader (ID: %u)\n", shader->id);
+        return;
+    }
+    glUniform1i(shader->loc_texture, 0); // Texture unit 0
+}
+
+void engine_gl_shader_set_color(Shader* shader, const vec4* color)
+{
+    if (shader->loc_color == -1)
+    {
+        engine_log_warning("Color uniform not found in shader (ID: %u)\n", shader->id);
+        return;
+    }
+    glUniform4fv(shader->loc_color, 1, (const GLfloat*)color);
 }
 
 void shader_load_all_from_directory(const char* directory)
