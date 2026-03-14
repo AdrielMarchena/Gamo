@@ -1,3 +1,4 @@
+#include "engine/ecs/components/camera.h"
 #include "engine/platform/window.h"
 #include "engine/renderer/renderer.h"
 #include "engine/renderer/texture.h"
@@ -22,8 +23,7 @@ static void check_gl_error(const char* file, int line)
     }
 }
 
-static mat4 projection;
-static mat4 view;
+static EngineCamera* current_camera = NULL;
 
 void engine_renderer_clear_color(void)
 {
@@ -37,8 +37,9 @@ bool engine_renderer_init(EngineWindow* window)
     void* glfw_window = engine_window_get_native_handle(window);
     engine_ui_setup_window(glfw_window);
 
-    glm_mat4_identity(view);
-    glm_ortho(0.0f, (float)800, (float)600, 0.0f, -1.0f, 1.0f, projection);
+    current_camera = engine_camera_create();
+    engine_camera_set_orthographic(current_camera, 0.0f, (float)800, (float)600, 0.0f, -1.0f, 1.0f);
+
     engine_shader_registry_init();
 
     shader_load_all_from_directory("shaders");
@@ -53,11 +54,14 @@ void engine_renderer_begin(void)
     engine_renderer_clear_color();
     Shader* shader = engine_shader_registry_get("basic");
 
+    const mat4* projection = engine_camera_get_projection(current_camera);
+    const mat4* view = engine_camera_get_view(current_camera);
+
     engine_gl_shader_bind(shader);
-    engine_gl_shader_set_projection(shader, &projection);
+    engine_gl_shader_set_projection(shader, projection);
     check_gl_error(__FILE__, __LINE__);
 
-    engine_gl_shader_set_view(shader, &view);
+    engine_gl_shader_set_view(shader, view);
     check_gl_error(__FILE__, __LINE__);
 }
 
@@ -103,6 +107,18 @@ void engine_renderer_draw_mesh_with_texture(const mat4* model, const Mesh* mesh,
 
     glDrawElements(GL_TRIANGLES, (GLsizei)mesh->index_count, GL_UNSIGNED_INT, 0);
     check_gl_error(__FILE__, __LINE__);
+}
+
+void engine_renderer_resize(int width, int height)
+{
+    glViewport(0, 0, width, height);
+    check_gl_error(__FILE__, __LINE__);
+
+    if (current_camera)
+    {
+        engine_camera_set_orthographic(current_camera, 0.0f, (float)width, (float)height, 0.0f,
+                                       -1.0f, 1.0f);
+    }
 }
 
 void engine_renderer_set_clear_color(float red, float green, float blue, float alpha)
