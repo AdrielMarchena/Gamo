@@ -5,6 +5,7 @@
 #include "engine/general/engine_alloc.h"
 #include "engine/general/logger.h"
 #include "engine/platform/window.h"
+#include "engine/ui/ui.h"
 
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
@@ -82,6 +83,50 @@ EngineMonitorInfo get_glfw_monitor_info(GLFWmonitor* monitor)
 
 static inline void set_callbacks(EngineWindow* window);
 
+static void forward_nuklear_key_callback(WindowContext* ctx, GLFWwindow* window, int key,
+                                         int scancode, int action, int mods)
+{
+    if (!ctx || !ctx->ui_user_pointer)
+    {
+        return;
+    }
+
+    engine_ui_forward_key_input(window, ctx->ui_user_pointer, key, scancode, action, mods);
+}
+
+static void forward_nuklear_char_callback(WindowContext* ctx, GLFWwindow* window,
+                                          unsigned int codepoint)
+{
+    if (!ctx || !ctx->ui_user_pointer)
+    {
+        return;
+    }
+
+    engine_ui_forward_char_input(window, ctx->ui_user_pointer, codepoint);
+}
+
+static void forward_nuklear_scroll_callback(WindowContext* ctx, GLFWwindow* window, double xoff,
+                                            double yoff)
+{
+    if (!ctx || !ctx->ui_user_pointer)
+    {
+        return;
+    }
+
+    engine_ui_forward_scroll_input(window, ctx->ui_user_pointer, xoff, yoff);
+}
+
+static void forward_nuklear_mouse_button_callback(WindowContext* ctx, GLFWwindow* window,
+                                                  int button, int action, int mods)
+{
+    if (!ctx || !ctx->ui_user_pointer)
+    {
+        return;
+    }
+
+    engine_ui_forward_mouse_button_input(window, ctx->ui_user_pointer, button, action, mods);
+}
+
 EngineWindow* engine_window_create(EventQueue* event_queue)
 {
     if (!glfwInit())
@@ -125,15 +170,20 @@ EngineWindow* engine_window_create(EventQueue* event_queue)
         return NULL;
     }
 
-    if (event_queue)
+    WindowContext* context = engine_alloc(sizeof(WindowContext));
+    if (!context)
     {
-        engine_log_info("setting event queue on glfw");
-
-        WindowContext* context = engine_alloc(sizeof(WindowContext));
-
-        context->event_queue = event_queue;
-        glfwSetWindowUserPointer(window->handle, context);
+        engine_log_error("Failed to allocate window context\n");
+        glfwDestroyWindow(window->handle);
+        engine_free(window);
+        glfwTerminate();
+        return NULL;
     }
+
+    context->event_queue = event_queue;
+    context->ui_user_pointer = NULL;
+
+    glfwSetWindowUserPointer(window->handle, context);
 
     set_callbacks(window);
 
@@ -144,8 +194,10 @@ void engine_window_destroy(EngineWindow* window)
 {
     if (window)
     {
-        glfwDestroyWindow(window->handle);
         WindowContext* context = glfwGetWindowUserPointer(window->handle);
+
+        glfwDestroyWindow(window->handle);
+
         if (context)
         {
             engine_free(context);
@@ -215,6 +267,36 @@ void* engine_window_get_native_handle(EngineWindow* window)
     return window->handle;
 }
 
+WindowContext* engine_window_get_context(void* native_window_handle)
+{
+    if (!native_window_handle)
+    {
+        return NULL;
+    }
+
+    return (WindowContext*)glfwGetWindowUserPointer((GLFWwindow*)native_window_handle);
+}
+
+void engine_window_set_context(void* native_window_handle, WindowContext* context)
+{
+    if (!native_window_handle)
+    {
+        return;
+    }
+
+    glfwSetWindowUserPointer((GLFWwindow*)native_window_handle, context);
+}
+
+void engine_window_context_set_ui_user_pointer(WindowContext* context, void* ui_user_pointer)
+{
+    if (!context)
+    {
+        return;
+    }
+
+    context->ui_user_pointer = ui_user_pointer;
+}
+
 void engine_gl_basic_clear_for_test()
 {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -225,6 +307,11 @@ static void glfw_window_size_callback(GLFWwindow* window, int width, int height)
     WindowContext* ctx = glfwGetWindowUserPointer(window);
     ENGINE_ASSERT(ctx != NULL, "Window context is NULL in window size callback");
 
+    if (!ctx->event_queue)
+    {
+        return;
+    }
+
     Event event = engine_create_window_resize_event(width, height);
     engine_event_queue_push(ctx->event_queue, event);
 }
@@ -233,6 +320,13 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 {
     WindowContext* ctx = glfwGetWindowUserPointer(window);
     ENGINE_ASSERT(ctx != NULL, "Window context is NULL in cursor callback");
+
+    forward_nuklear_key_callback(ctx, window, key, scancode, action, mods);
+
+    if (!ctx->event_queue)
+    {
+        return;
+    }
 
     if (action == GLFW_PRESS || action == GLFW_REPEAT)
     {
@@ -247,10 +341,23 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
     }
 }
 
+static void glfw_char_callback(GLFWwindow* window, unsigned int codepoint)
+{
+    WindowContext* ctx = glfwGetWindowUserPointer(window);
+    ENGINE_ASSERT(ctx != NULL, "Window context is NULL in char callback");
+
+    forward_nuklear_char_callback(ctx, window, codepoint);
+}
+
 static void glfw_cursor_callback(GLFWwindow* window, double xcord, double ycord)
 {
     WindowContext* ctx = glfwGetWindowUserPointer(window);
     ENGINE_ASSERT(ctx != NULL, "Window context is NULL in cursor callback");
+
+    if (!ctx->event_queue)
+    {
+        return;
+    }
 
     Event event = engine_create_mouse_moved_event(xcord, ycord);
 
@@ -262,6 +369,13 @@ static void glfw_scroll_callback(GLFWwindow* window, double xoff, double yoff)
     WindowContext* ctx = glfwGetWindowUserPointer(window);
     ENGINE_ASSERT(ctx != NULL, "Window context is NULL in cursor callback");
 
+    forward_nuklear_scroll_callback(ctx, window, xoff, yoff);
+
+    if (!ctx->event_queue)
+    {
+        return;
+    }
+
     Event event = engine_create_mouse_scrolled_event(xoff, yoff);
 
     engine_event_queue_push(ctx->event_queue, event);
@@ -271,6 +385,13 @@ static void glfw_mouse_button_callback(GLFWwindow* window, int button, int actio
 {
     WindowContext* ctx = glfwGetWindowUserPointer(window);
     ENGINE_ASSERT(ctx != NULL, "Window context is NULL in cursor callback");
+
+    forward_nuklear_mouse_button_callback(ctx, window, button, action, mods);
+
+    if (!ctx->event_queue)
+    {
+        return;
+    }
 
     Event event = {0};
 
@@ -295,6 +416,11 @@ static void glfw_window_close_callback(GLFWwindow* window)
     WindowContext* ctx = glfwGetWindowUserPointer(window);
     ENGINE_ASSERT(ctx != NULL, "Window context is NULL in cursor callback");
 
+    if (!ctx->event_queue)
+    {
+        return;
+    }
+
     Event event = engine_create_window_close_event();
 
     engine_event_queue_push(ctx->event_queue, event);
@@ -304,6 +430,7 @@ static inline void set_callbacks(EngineWindow* window)
 {
     glfwSetWindowSizeCallback(window->handle, (GLFWwindowsizefun)glfw_window_size_callback);
     glfwSetKeyCallback(window->handle, (GLFWkeyfun)glfw_key_callback);
+    glfwSetCharCallback(window->handle, (GLFWcharfun)glfw_char_callback);
     glfwSetCursorPosCallback(window->handle, (GLFWcursorposfun)glfw_cursor_callback);
     glfwSetScrollCallback(window->handle, (GLFWscrollfun)glfw_scroll_callback);
     glfwSetMouseButtonCallback(window->handle, (GLFWmousebuttonfun)glfw_mouse_button_callback);

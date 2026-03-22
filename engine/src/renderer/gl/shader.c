@@ -143,7 +143,6 @@ void engine_gl_shader_set_color(Shader* shader, const vec4* color)
 {
     if (shader->loc_color == -1)
     {
-        engine_log_warning("Color uniform not found in shader (ID: %u)\n", shader->id);
         return;
     }
     glUniform4fv(shader->loc_color, 1, (const GLfloat*)color);

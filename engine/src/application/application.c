@@ -6,14 +6,15 @@
 #include "engine/platform/window.h"
 #include "engine/ecs/scene.h"
 
-#include "engine/ecs/components/transform.h"
-#include "engine/ecs/components/mesh.h"
-#include "engine/ecs/components/texture.h"
+static inline void process_events(Engine* engine)
+{
+    Event event;
 
-float vertices[] = {-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.5f,  -0.5f, 0.0f, 1.0f, 0.0f,
-                    0.5f,  0.5f,  0.0f, 1.0f, 1.0f, -0.5f, 0.5f,  0.0f, 0.0f, 1.0f};
-
-unsigned int indices[] = {0, 1, 2, 2, 3, 0};
+    while (engine_event_queue_pop(engine->event_queue, &event))
+    {
+        engine_log_info("Event popped from queue: %d", event.type);
+    }
+}
 
 static EngineApp* app = NULL;
 
@@ -61,29 +62,6 @@ int engine_run(const EngineApp* app)
         engine_log_info("Application initialized successfully");
     }
 
-    { // For testing
-        EngineEntity entity = engine_scene_entity_create(app->engine->scene);
-
-        TransformComponent* trans = engine_entity_add(entity, TransformComponent);
-        trans->translation[0] = 300.0F;
-        trans->translation[1] = 200.0F;
-
-        trans->scale[0] = 100.0F;
-        trans->scale[1] = -100.0F;
-
-        TextureComponent* texture = engine_entity_add(entity, TextureComponent);
-        texture->texture = engine_texture_load("assets/gato.jpg");
-
-        texture->color[0] = 1.0f;
-        texture->color[1] = 1.0f;
-        texture->color[2] = 1.0f;
-        texture->color[3] = 1.0f;
-
-        MeshComponent* mesh = engine_entity_add(entity, MeshComponent);
-
-        mesh->mesh = engine_mesh_create(vertices, sizeof(vertices), indices, sizeof(indices));
-    }
-
     uint64_t frame_count = 0;
 
     engine_log_info("Entering main loop");
@@ -94,6 +72,7 @@ int engine_run(const EngineApp* app)
         engine_time_update(app->engine->time);
 
         engine_window_poll_events(app->engine->window);
+        process_events(app->engine);
 
         if (app->update)
         {

@@ -29,6 +29,7 @@ typedef struct EngineWindow EngineWindow;
 typedef struct
 {
     EventQueue* event_queue;
+    void* ui_user_pointer;
 } WindowContext;
 
 /*
@@ -83,5 +84,11 @@ EngineMonitorInfo engine_get_primary_monitor(void);
 void engine_toggle_vsync(EngineWindow* window, bool enabled);
 
 void* engine_window_get_native_handle(EngineWindow* window);
+
+WindowContext* engine_window_get_context(void* native_window_handle);
+
+void engine_window_set_context(void* native_window_handle, WindowContext* context);
+
+void engine_window_context_set_ui_user_pointer(WindowContext* context, void* ui_user_pointer);
 
 void engine_gl_basic_clear_for_test(void);

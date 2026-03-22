@@ -17,4 +17,15 @@ void engine_ui_new_frame(EngineUI* ui_context);
 void engine_ui_render(EngineUI* ui_context);
 void engine_ui_shutdown(EngineUI* ui_context);
 
+void engine_ui_forward_key_input(void* glfw_window, void* ui_user_pointer, int key, int scancode,
+                                 int action, int mods);
+
+void engine_ui_forward_char_input(void* glfw_window, void* ui_user_pointer, unsigned int codepoint);
+
+void engine_ui_forward_scroll_input(void* glfw_window, void* ui_user_pointer, double xoff,
+                                    double yoff);
+
+void engine_ui_forward_mouse_button_input(void* glfw_window, void* ui_user_pointer, int button,
+                                          int action, int mods);
+
 #endif

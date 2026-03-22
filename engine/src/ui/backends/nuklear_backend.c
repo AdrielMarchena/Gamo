@@ -1,4 +1,5 @@
 #include "engine/ui/ui_backend.h"
+#include "engine/platform/window.h"
 
 #include <glad/glad.h>
 
@@ -26,13 +27,23 @@ static bool nuklear_init(void* glfw_window)
         return false;
     }
 
-    s_nk_ctx = nk_glfw3_init(&s_nk_glfw, (GLFWwindow*)glfw_window, NK_GLFW3_INSTALL_CALLBACKS);
+    WindowContext* window_context = engine_window_get_context(glfw_window);
+    if (!window_context)
+    {
+        fprintf(stderr, "Error: window context is NULL\n");
+        return false;
+    }
+
+    s_nk_ctx = nk_glfw3_init(&s_nk_glfw, (GLFWwindow*)glfw_window, NK_GLFW3_DEFAULT);
 
     if (!s_nk_ctx)
     {
         fprintf(stderr, "Error: nk_glfw3_init failed\n");
         return false;
     }
+
+    engine_window_context_set_ui_user_pointer(window_context, &s_nk_glfw);
+    engine_window_set_context(glfw_window, window_context);
 
     // Setup default font
     {
@@ -88,4 +99,59 @@ const EngineUIBackend nuklear_backend = {
 struct nk_context* engine_nuklear_get_context(void)
 {
     return s_nk_ctx;
+}
+
+void engine_ui_forward_key_input(void* glfw_window, void* ui_user_pointer, int key, int scancode,
+                                 int action, int mods)
+{
+    if (!glfw_window || !ui_user_pointer)
+    {
+        return;
+    }
+
+    void* previous_user_pointer = glfwGetWindowUserPointer((GLFWwindow*)glfw_window);
+    glfwSetWindowUserPointer((GLFWwindow*)glfw_window, ui_user_pointer);
+    nk_glfw3_key_callback((GLFWwindow*)glfw_window, key, scancode, action, mods);
+    glfwSetWindowUserPointer((GLFWwindow*)glfw_window, previous_user_pointer);
+}
+
+void engine_ui_forward_char_input(void* glfw_window, void* ui_user_pointer, unsigned int codepoint)
+{
+    if (!glfw_window || !ui_user_pointer)
+    {
+        return;
+    }
+
+    void* previous_user_pointer = glfwGetWindowUserPointer((GLFWwindow*)glfw_window);
+    glfwSetWindowUserPointer((GLFWwindow*)glfw_window, ui_user_pointer);
+    nk_glfw3_char_callback((GLFWwindow*)glfw_window, codepoint);
+    glfwSetWindowUserPointer((GLFWwindow*)glfw_window, previous_user_pointer);
+}
+
+void engine_ui_forward_scroll_input(void* glfw_window, void* ui_user_pointer, double xoff,
+                                    double yoff)
+{
+    if (!glfw_window || !ui_user_pointer)
+    {
+        return;
+    }
+
+    void* previous_user_pointer = glfwGetWindowUserPointer((GLFWwindow*)glfw_window);
+    glfwSetWindowUserPointer((GLFWwindow*)glfw_window, ui_user_pointer);
+    nk_gflw3_scroll_callback((GLFWwindow*)glfw_window, xoff, yoff);
+    glfwSetWindowUserPointer((GLFWwindow*)glfw_window, previous_user_pointer);
+}
+
+void engine_ui_forward_mouse_button_input(void* glfw_window, void* ui_user_pointer, int button,
+                                          int action, int mods)
+{
+    if (!glfw_window || !ui_user_pointer)
+    {
+        return;
+    }
+
+    void* previous_user_pointer = glfwGetWindowUserPointer((GLFWwindow*)glfw_window);
+    glfwSetWindowUserPointer((GLFWwindow*)glfw_window, ui_user_pointer);
+    nk_glfw3_mouse_button_callback((GLFWwindow*)glfw_window, button, action, mods);
+    glfwSetWindowUserPointer((GLFWwindow*)glfw_window, previous_user_pointer);
 }
