@@ -5,8 +5,6 @@
 #include "engine/general/logger.h"
 #include "engine/platform/window.h"
 #include "engine/ecs/scene.h"
-#include "engine/renderer/renderer.h"
-#include "engine/ui/ui.h"
 
 #include "engine/ecs/components/transform.h"
 #include "engine/ecs/components/mesh.h"

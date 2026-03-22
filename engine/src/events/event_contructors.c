@@ -10,6 +10,14 @@ Event engine_create_window_resize_event(int32_t width, int32_t height)
     return event;
 }
 
+Event engine_create_window_close_event()
+{
+    Event event = {0};
+    event.type = EVENT_TYPE_WINDOW_CLOSE;
+    event.category = EVENT_CATEGORY_APPLICATION;
+    return event;
+}
+
 Event engine_create_key_pressed_event(int32_t key, int32_t repeat)
 {
     Event event = {0};
@@ -29,7 +37,7 @@ Event engine_create_key_released_event(int32_t key)
     return event;
 }
 
-Event engine_create_mouse_moved_event(float x, float y)
+Event engine_create_mouse_moved_event(double x, double y)
 {
     Event event = {0};
     event.type = EVENT_TYPE_MOUSE_MOVE;
@@ -39,7 +47,7 @@ Event engine_create_mouse_moved_event(float x, float y)
     return event;
 }
 
-Event engine_create_mouse_scrolled_event(float xOffset, float yOffset)
+Event engine_create_mouse_scrolled_event(double xOffset, double yOffset)
 {
     Event event = {0};
     event.type = EVENT_TYPE_MOUSE_SCROLL;

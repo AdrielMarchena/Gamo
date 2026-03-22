@@ -40,12 +40,12 @@ typedef struct
 
 typedef struct
 {
-    float x, y;
+    double x, y;
 } MouseMovedEvent;
 
 typedef struct
 {
-    float xOffset, yOffset;
+    double xOffset, yOffset;
 } MouseScrolledEvent;
 
 typedef struct

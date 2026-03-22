@@ -1,5 +1,6 @@
 #include "engine/engine.h"
 #include "engine/core/time.h"
+#include "engine/events/events.h"
 #include "engine/general/engine_alloc.h"
 #include "engine/general/logger.h"
 #include "engine/ui/ui.h"
@@ -21,10 +22,20 @@ Engine* engine_create()
     engine->time = NULL;
     engine->ui = NULL;
 
-    EngineWindow* window = engine_window_create(NULL);
+    EventQueue* event_queue = engine_event_queue_create();
+    if (event_queue == NULL)
+    {
+        engine_log_error("Failed to create event queue");
+        engine_free(engine);
+        return NULL;
+    }
+    engine->event_queue = event_queue;
+
+    EngineWindow* window = engine_window_create(event_queue);
     if (window == NULL)
     {
         engine_log_error("Failed to create window");
+        engine_event_queue_destroy(event_queue);
         engine_free(engine);
         return NULL;
     }
@@ -35,6 +46,7 @@ Engine* engine_create()
     {
         engine_log_error("Failed to create time context");
         engine_window_destroy(window);
+        engine_event_queue_destroy(event_queue);
         engine_free(engine);
         return NULL;
     }
@@ -47,6 +59,7 @@ Engine* engine_create()
         engine_log_error("Failed to create UI context");
         engine_time_destroy(time);
         engine_window_destroy(window);
+        engine_event_queue_destroy(event_queue);
         engine_free(engine);
         return NULL;
     }
@@ -57,6 +70,7 @@ Engine* engine_create()
         engine_ui_destroy(ui_context);
         engine_time_destroy(time);
         engine_window_destroy(window);
+        engine_event_queue_destroy(event_queue);
         engine_free(engine);
         return NULL;
     }
@@ -69,23 +83,11 @@ Engine* engine_create()
         engine_ui_destroy(ui_context);
         engine_time_destroy(time);
         engine_window_destroy(window);
+        engine_event_queue_destroy(event_queue);
         engine_free(engine);
         return NULL;
     }
     engine->renderer = renderer;
-
-    EventQueue* event_queue = engine_event_queue_create();
-    if (event_queue == NULL)
-    {
-        engine_log_error("Failed to create event queue");
-        engine_renderer_shutdown(renderer);
-        engine_ui_destroy(ui_context);
-        engine_time_destroy(time);
-        engine_window_destroy(window);
-        engine_free(engine);
-        return NULL;
-    }
-    engine->event_queue = event_queue;
 
     EngineScene* scene = engine_scene_create();
     if (scene == NULL)
@@ -108,11 +110,11 @@ void engine_destroy(Engine* engine)
     if (engine)
     {
         engine_scene_destroy(engine->scene);
+        engine_window_destroy(engine->window);
         engine_event_queue_destroy(engine->event_queue);
         engine_renderer_shutdown(engine->renderer);
         engine_ui_destroy(engine->ui);
         engine_time_destroy(engine->time);
-        engine_window_destroy(engine->window);
         engine_free(engine);
     }
 }

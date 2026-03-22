@@ -24,6 +24,14 @@
 typedef struct EngineWindow EngineWindow;
 
 /*
+ * Context passed to window callbacks. Contains the event queue to push events to.
+ */
+typedef struct
+{
+    EventQueue* event_queue;
+} WindowContext;
+
+/*
  * Creates a new Engine Window instance. Returns NULL on failure.
  */
 EngineWindow* engine_window_create(EventQueue* event_queue);
