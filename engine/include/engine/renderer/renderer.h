@@ -2,6 +2,7 @@
 
 #include "engine/platform/window.h"
 #include "engine/renderer/texture.h"
+#include "engine/ui/ui.h"
 
 #include <stdbool.h>
 
@@ -15,7 +16,7 @@ typedef struct EngineRenderer EngineRenderer;
 
 // Renderer API
 
-EngineRenderer* engine_renderer_init(EngineWindow* window);
+EngineRenderer* engine_renderer_init(EngineWindow* window, EngineUI* ui_context);
 void engine_renderer_shutdown(EngineRenderer* renderer);
 
 void engine_renderer_begin(EngineRenderer* renderer);

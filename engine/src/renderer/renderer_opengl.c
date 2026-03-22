@@ -19,6 +19,7 @@ typedef struct EngineRenderer
 {
     // Renderer state and resources can be added here
     uint8_t initialized;
+    EngineUI* ui_context;
 } EngineRenderer;
 
 static void check_gl_error(const char* file, int line)
@@ -38,12 +39,16 @@ void engine_renderer_clear_color(EngineRenderer* renderer)
     check_gl_error(__FILE__, __LINE__);
 }
 
-EngineRenderer* engine_renderer_init(EngineWindow* window)
+EngineRenderer* engine_renderer_init(EngineWindow* window, EngineUI* ui_context)
 {
     EngineRenderer* renderer = engine_alloc(sizeof(EngineRenderer));
-    // Initialize UI system
-    void* glfw_window = engine_window_get_native_handle(window);
-    engine_ui_setup_window(glfw_window);
+
+    if (!renderer)
+    {
+        return NULL;
+    }
+
+    renderer->ui_context = ui_context;
 
     current_camera = engine_camera_create();
     engine_camera_set_orthographic(current_camera, 0.0f, (float)800, (float)600, 0.0f, -1.0f, 1.0f);
@@ -80,7 +85,6 @@ void engine_renderer_end(EngineRenderer* renderer) {}
 void engine_renderer_shutdown(EngineRenderer* renderer)
 {
     engine_shader_registry_destroy();
-    engine_ui_shutdown();
     engine_free(renderer);
 }
 
@@ -141,10 +145,10 @@ void engine_renderer_set_clear_color(EngineRenderer* renderer, float red, float 
 
 void engine_renderer_handle_ui_input(EngineRenderer* renderer)
 {
-    engine_ui_new_frame();
+    engine_ui_new_frame(renderer->ui_context);
 }
 
 void engine_renderer_draw_ui(EngineRenderer* renderer)
 {
-    engine_ui_render();
+    engine_ui_render(renderer->ui_context);
 }

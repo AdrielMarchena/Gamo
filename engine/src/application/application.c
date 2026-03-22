@@ -63,10 +63,6 @@ int engine_run(const EngineApp* app)
         engine_log_info("Application initialized successfully");
     }
 
-    engine_time_init();
-
-    engine_ui_init();
-
     { // For testing
         EngineEntity entity = engine_scene_entity_create(app->engine->scene);
 
@@ -95,9 +91,9 @@ int engine_run(const EngineApp* app)
     engine_log_info("Entering main loop");
     while (!engine_window_should_close(app->engine->window))
     {
-        const float delta_time = engine_time_delta();
+        const float delta_time = engine_time_delta(app->engine->time);
 
-        engine_time_update();
+        engine_time_update(app->engine->time);
 
         engine_window_poll_events(app->engine->window);
 
@@ -106,7 +102,7 @@ int engine_run(const EngineApp* app)
             app->update((UpdateData){
                 .delta_time = delta_time,
                 .frame_count = frame_count,
-                .frame_rate = engine_time_fps(),
+                .frame_rate = engine_time_fps(app->engine->time),
             });
         }
 

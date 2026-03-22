@@ -2,8 +2,10 @@
 
 #include "engine/platform/window.h"
 #include "engine/events/events.h"
+#include "engine/core/time.h"
 #include "engine/renderer/renderer.h"
 #include "engine/ecs/scene.h"
+#include "engine/ui/ui.h"
 
 typedef struct Engine
 {
@@ -11,6 +13,8 @@ typedef struct Engine
     EngineRenderer* renderer;
     EventQueue* event_queue;
     EngineScene* scene;
+    EngineTime* time;
+    EngineUI* ui;
 } Engine;
 
 /********************
@@ -40,3 +44,9 @@ EventQueue* engine_get_event_queue(Engine* engine);
 
 // Scene context
 EngineScene* engine_get_scene(Engine* engine);
+
+// Time context
+EngineTime* engine_get_time(Engine* engine);
+
+// UI context
+EngineUI* engine_get_ui(Engine* engine);
