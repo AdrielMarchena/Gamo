@@ -94,6 +94,9 @@ typedef struct
     int tail;
 } EventQueue;
 
+EventQueue* engine_event_queue_create();
+void engine_event_queue_destroy(EventQueue* queue);
+
 int32_t engine_event_queue_push(EventQueue* queue, Event event);
 int32_t engine_event_queue_pop(EventQueue* queue, Event* event);
 int32_t engine_event_queue_is_empty(const EventQueue* queue);

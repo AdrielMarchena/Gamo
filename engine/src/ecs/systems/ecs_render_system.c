@@ -6,6 +6,7 @@
 
 #include "engine/renderer/renderer.h"
 #include "engine/general/assert.h"
+#include "engine/application/application.h"
 
 #include <cglm/cglm.h>
 #include <flecs.h>
@@ -33,6 +34,8 @@ void engine_ecs_render_system(ecs_iter_t* iter)
     ENGINE_ASSERT(transforms != NULL, "Transforms component is NULL");
     ENGINE_ASSERT(meshes != NULL, "Meshes component is NULL");
 
+    EngineRenderer* renderer = engine_get_current_engine()->renderer;
+
     for (int i = 0; i < iter->count; i++)
     {
         TransformComponent* trans = &transforms[i];
@@ -41,24 +44,24 @@ void engine_ecs_render_system(ecs_iter_t* iter)
         mat4 model;
         transform_to_model_matrix(trans, model);
 
-        engine_renderer_handle_ui_input();
+        engine_renderer_handle_ui_input(renderer);
 
-        engine_renderer_begin();
+        engine_renderer_begin(renderer);
 
         if (textures && textures[i].texture)
         {
-            engine_renderer_draw_mesh_with_texture(&model, mesh->mesh, textures[i].texture,
-                                                   &textures[i].color);
+            engine_renderer_draw_mesh_with_texture(renderer, &model, mesh->mesh,
+                                                   textures[i].texture, &textures[i].color);
         }
         else
         {
-            engine_renderer_draw_mesh(&model, mesh->mesh);
+            engine_renderer_draw_mesh(renderer, &model, mesh->mesh);
         }
 
-        engine_renderer_draw_mesh(&model, mesh->mesh);
+        engine_renderer_draw_mesh(renderer, &model, mesh->mesh);
 
-        engine_renderer_draw_ui();
+        engine_renderer_draw_ui(renderer);
 
-        engine_renderer_end();
+        engine_renderer_end(renderer);
     }
 }

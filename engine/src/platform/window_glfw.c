@@ -77,7 +77,7 @@ EngineMonitorInfo get_glfw_monitor_info(GLFWmonitor* monitor)
     return info;
 }
 
-EngineWindow* engine_window_create()
+EngineWindow* engine_window_create(EventQueue* event_queue)
 {
     if (!glfwInit())
     {
@@ -120,9 +120,11 @@ EngineWindow* engine_window_create()
         return NULL;
     }
 
-    // EventQueue event_queue = {0};
-
-    // glfwSetWindowUserPointer(window->handle, &event_queue);
+    if (event_queue)
+    {
+        engine_log_info("setting event queue on glfw");
+        glfwSetWindowUserPointer(window->handle, event_queue);
+    }
 
     return window;
 }

@@ -14,6 +14,7 @@
 
 #include "engine/platform/monitor.h"
 #include <stdbool.h>
+#include "engine/events/events.h"
 
 #define ENGINE_GAMMA_RAMP_SIZE 256
 
@@ -25,7 +26,7 @@ typedef struct EngineWindow EngineWindow;
 /*
  * Creates a new Engine Window instance. Returns NULL on failure.
  */
-EngineWindow* engine_window_create(void);
+EngineWindow* engine_window_create(EventQueue* event_queue);
 
 /*
  * Destroys the given Engine Window instance and releases all associated

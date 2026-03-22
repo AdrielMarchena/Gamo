@@ -1,4 +1,5 @@
 #include "engine/ecs/components/camera.h"
+#include "engine/general/engine_alloc.h"
 #include "engine/platform/window.h"
 #include "engine/renderer/renderer.h"
 #include "engine/renderer/texture.h"
@@ -14,6 +15,12 @@
 
 static unsigned int gl_clear_flags = GL_COLOR_BUFFER_BIT;
 
+typedef struct EngineRenderer
+{
+    // Renderer state and resources can be added here
+    uint8_t initialized;
+} EngineRenderer;
+
 static void check_gl_error(const char* file, int line)
 {
     GLenum err;
@@ -25,14 +32,15 @@ static void check_gl_error(const char* file, int line)
 
 static EngineCamera* current_camera = NULL;
 
-void engine_renderer_clear_color(void)
+void engine_renderer_clear_color(EngineRenderer* renderer)
 {
     glClear(gl_clear_flags);
     check_gl_error(__FILE__, __LINE__);
 }
 
-bool engine_renderer_init(EngineWindow* window)
+EngineRenderer* engine_renderer_init(EngineWindow* window)
 {
+    EngineRenderer* renderer = engine_alloc(sizeof(EngineRenderer));
     // Initialize UI system
     void* glfw_window = engine_window_get_native_handle(window);
     engine_ui_setup_window(glfw_window);
@@ -46,12 +54,14 @@ bool engine_renderer_init(EngineWindow* window)
 
     glDisable(GL_DEPTH_TEST);
     check_gl_error(__FILE__, __LINE__);
-    return true;
+
+    renderer->initialized = 1;
+    return renderer;
 }
 
-void engine_renderer_begin(void)
+void engine_renderer_begin(EngineRenderer* renderer)
 {
-    engine_renderer_clear_color();
+    engine_renderer_clear_color(renderer);
     Shader* shader = engine_shader_registry_get("basic");
 
     const mat4* projection = engine_camera_get_projection(current_camera);
@@ -65,15 +75,16 @@ void engine_renderer_begin(void)
     check_gl_error(__FILE__, __LINE__);
 }
 
-void engine_renderer_end(void) {}
+void engine_renderer_end(EngineRenderer* renderer) {}
 
-void engine_renderer_shutdown(void)
+void engine_renderer_shutdown(EngineRenderer* renderer)
 {
     engine_shader_registry_destroy();
     engine_ui_shutdown();
+    engine_free(renderer);
 }
 
-void engine_renderer_draw_mesh(const mat4* model, const Mesh* mesh)
+void engine_renderer_draw_mesh(EngineRenderer* renderer, const mat4* model, const Mesh* mesh)
 {
     check_gl_error(__FILE__, __LINE__);
     Shader* shader = engine_shader_registry_get("basic");
@@ -88,8 +99,8 @@ void engine_renderer_draw_mesh(const mat4* model, const Mesh* mesh)
     check_gl_error(__FILE__, __LINE__);
 }
 
-void engine_renderer_draw_mesh_with_texture(const mat4* model, const Mesh* mesh, Texture* texture,
-                                            const vec4* color)
+void engine_renderer_draw_mesh_with_texture(EngineRenderer* renderer, const mat4* model,
+                                            const Mesh* mesh, Texture* texture, const vec4* color)
 {
     check_gl_error(__FILE__, __LINE__);
     Shader* shader = engine_shader_registry_get("basic");
@@ -109,7 +120,7 @@ void engine_renderer_draw_mesh_with_texture(const mat4* model, const Mesh* mesh,
     check_gl_error(__FILE__, __LINE__);
 }
 
-void engine_renderer_resize(int width, int height)
+void engine_renderer_resize(EngineRenderer* renderer, int width, int height)
 {
     glViewport(0, 0, width, height);
     check_gl_error(__FILE__, __LINE__);
@@ -121,18 +132,19 @@ void engine_renderer_resize(int width, int height)
     }
 }
 
-void engine_renderer_set_clear_color(float red, float green, float blue, float alpha)
+void engine_renderer_set_clear_color(EngineRenderer* renderer, float red, float green, float blue,
+                                     float alpha)
 {
     glClearColor(red, green, blue, alpha);
     check_gl_error(__FILE__, __LINE__);
 }
 
-void engine_renderer_handle_ui_input(void)
+void engine_renderer_handle_ui_input(EngineRenderer* renderer)
 {
     engine_ui_new_frame();
 }
 
-void engine_renderer_draw_ui(void)
+void engine_renderer_draw_ui(EngineRenderer* renderer)
 {
     engine_ui_render();
 }

@@ -12,6 +12,7 @@ target_link_libraries(app
 target_include_directories(app PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/vendor/nuklear
+    ${CMAKE_SOURCE_DIR}/vendor/cglm/include
 )
 
 target_compile_definitions(app

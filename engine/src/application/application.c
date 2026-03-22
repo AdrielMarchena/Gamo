@@ -1,5 +1,7 @@
 #include "engine/application/application.h"
 #include "engine/core/time.h"
+#include "engine/engine.h"
+#include "engine/general/engine_alloc.h"
 #include "engine/general/logger.h"
 #include "engine/platform/window.h"
 #include "engine/ecs/scene.h"
@@ -15,17 +17,34 @@ float vertices[] = {-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.5f,  -0.5f, 0.0f, 1.0f, 0.
 
 unsigned int indices[] = {0, 1, 2, 2, 3, 0};
 
+static EngineApp* app = NULL;
+
+EngineApp* engine_get_current_app()
+{
+    return app;
+}
+
+Engine* engine_get_current_engine()
+{
+    return app->engine;
+}
+
+EngineApp* engine_create_app(bool (*init)(void), void (*update)(UpdateData), void (*shutdown)(void))
+{
+    app = engine_alloc(sizeof(EngineApp));
+    app->init = init;
+    app->update = update;
+    app->shutdown = shutdown;
+
+    Engine* engine = engine_create();
+
+    app->engine = engine;
+
+    return app;
+}
+
 int engine_run(const EngineApp* app)
 {
-    EngineWindow* window = engine_window_create();
-
-    if (window == NULL)
-    {
-        engine_log_error("Failed to create window");
-        return -1;
-    }
-
-    engine_toggle_vsync(window, true);
 
     engine_log_info("Window created successfully");
 
@@ -48,18 +67,8 @@ int engine_run(const EngineApp* app)
 
     engine_ui_init();
 
-    engine_renderer_init(window);
-
-    EngineScene* scene = engine_scene_create();
-
-    if (scene == NULL)
-    {
-        engine_log_error("Failed to create scene");
-        return -1;
-    }
-
     { // For testing
-        EngineEntity entity = engine_scene_entity_create(scene);
+        EngineEntity entity = engine_scene_entity_create(app->engine->scene);
 
         TransformComponent* trans = engine_entity_add(entity, TransformComponent);
         trans->translation[0] = 300.0F;
@@ -84,13 +93,13 @@ int engine_run(const EngineApp* app)
     uint64_t frame_count = 0;
 
     engine_log_info("Entering main loop");
-    while (!engine_window_should_close(window))
+    while (!engine_window_should_close(app->engine->window))
     {
         const float delta_time = engine_time_delta();
 
         engine_time_update();
 
-        engine_window_poll_events(window);
+        engine_window_poll_events(app->engine->window);
 
         if (app->update)
         {
@@ -101,9 +110,9 @@ int engine_run(const EngineApp* app)
             });
         }
 
-        engine_scene_update(scene, delta_time);
+        engine_scene_update(app->engine->scene, delta_time);
 
-        engine_window_swap_buffers(window);
+        engine_window_swap_buffers(app->engine->window);
         frame_count++;
     }
 
@@ -116,8 +125,18 @@ int engine_run(const EngineApp* app)
         engine_log_info("Application shutdown complete");
     }
 
-    engine_log_info("Destroying window");
-    engine_window_destroy(window);
+    engine_log_info("Destroying application");
+    engine_app_destroy((EngineApp*)app);
 
     return 0;
+}
+
+void engine_app_destroy(EngineApp* app)
+{
+    if (app)
+    {
+        engine_destroy(app->engine);
+        engine_free(app);
+        app = NULL;
+    }
 }

@@ -1,6 +1,7 @@
 #include "engine/events/events.h"
 #include "engine/general/assert.h"
 #include "engine/core/debug_call.h"
+#include "engine/general/engine_alloc.h"
 #include <stdint.h>
 
 static inline int debug_event_type(EventType type)
@@ -70,6 +71,25 @@ int32_t engine_event_dispatch(Event* event, EventType type, EventFn handler)
         return 1; // Event handled
     }
     return 0; // Event not handled
+}
+
+EventQueue* engine_event_queue_create()
+{
+    EventQueue* queue = engine_alloc(sizeof(EventQueue));
+    if (queue)
+    {
+        queue->head = 0;
+        queue->tail = 0;
+    }
+    return queue;
+}
+
+void engine_event_queue_destroy(EventQueue* queue)
+{
+    if (queue)
+    {
+        engine_free(queue);
+    }
 }
 
 int32_t engine_event_queue_push(EventQueue* queue, Event event)

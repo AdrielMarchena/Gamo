@@ -16,7 +16,7 @@ static void app_shutdown(void) {}
 
 int main(void)
 {
-    EngineApp app = {.init = app_init, .update = app_update, .shutdown = app_shutdown};
+    EngineApp* app = engine_create_app(app_init, app_update, app_shutdown);
 
-    return engine_run(&app);
+    return engine_run(app);
 }
