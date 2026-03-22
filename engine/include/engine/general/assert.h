@@ -1,5 +1,6 @@
 #pragma once
 
+#include <assert.h>
 #include "engine/general/logger.h"
 
 #define ENGINE_ASSERT(cond, msg)                                                                   \

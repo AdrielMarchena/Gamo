@@ -34,3 +34,9 @@ target_precompile_headers(engine
     PRIVATE
         src/pch.h
 )
+
+target_compile_definitions(engine
+    PRIVATE
+        $<$<CONFIG:Debug>:ENGINE_DEBUG>
+        $<$<CONFIG:Release>:ENGINE_RELEASE>
+)

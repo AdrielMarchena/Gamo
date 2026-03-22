@@ -1,3 +1,4 @@
+#include "engine/events/events.h"
 #include "engine/general/engine_alloc.h"
 #include "engine/general/logger.h"
 #include "engine/platform/window.h"
@@ -118,6 +119,10 @@ EngineWindow* engine_window_create()
         glfwTerminate();
         return NULL;
     }
+
+    // EventQueue event_queue = {0};
+
+    // glfwSetWindowUserPointer(window->handle, &event_queue);
 
     return window;
 }

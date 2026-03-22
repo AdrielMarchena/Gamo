@@ -13,3 +13,9 @@ target_include_directories(app PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/vendor/nuklear
 )
+
+target_compile_definitions(app
+    PRIVATE
+        $<$<CONFIG:Debug>:APP_DEBUG>
+        $<$<CONFIG:Release>:APP_RELEASE>
+)
