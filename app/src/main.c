@@ -11,7 +11,7 @@ float vertices[] = {-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.5f,  -0.5f, 0.0f, 1.0f, 0.
 
 unsigned int indices[] = {0, 1, 2, 2, 3, 0};
 
-static bool app_init(void)
+static void on_create(EngineLayer* layer)
 {
     EngineApp* app = engine_get_current_app();
     EngineEntity entity = engine_scene_entity_create(app->engine->scene);
@@ -34,10 +34,9 @@ static bool app_init(void)
     MeshComponent* mesh = engine_entity_add(entity, MeshComponent);
 
     mesh->mesh = engine_mesh_create(vertices, sizeof(vertices), indices, sizeof(indices));
-    return true;
 }
 
-static void app_update(UpdateData update_data)
+static void ui_update(EngineLayer* layer, UpdateData update_data)
 {
     struct nk_context* ctx = engine_nuklear_get_context();
     render_app_ui(ctx, update_data);
@@ -47,7 +46,17 @@ static void app_shutdown(void) {}
 
 int main(void)
 {
-    EngineApp* app = engine_create_app(app_init, app_update, app_shutdown);
+    EngineApp* app = engine_create_app(NULL, app_shutdown);
+
+    EngineLayer ui_layer = {
+        .on_update = ui_update,
+    };
+    engine_push_ui_layer(app, &ui_layer);
+
+    EngineLayer layer = {
+        .on_create = on_create,
+    };
+    engine_push_layer(app, &layer);
 
     return engine_run(app);
 }

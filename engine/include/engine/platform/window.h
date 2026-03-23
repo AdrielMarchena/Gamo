@@ -55,6 +55,11 @@ void engine_window_poll_events(EngineWindow* window);
 bool engine_window_should_close(EngineWindow* window);
 
 /**
+ * Sets whether the given Engine Window instance should close.
+ */
+void engine_window_set_should_close(EngineWindow* window, bool should_close);
+
+/**
  * Retrieves the size of the given Engine Window instance.
  * Returns a struct containing the width and height of the window.
  */

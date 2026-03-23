@@ -140,3 +140,8 @@ void engine_scene_update(EngineScene* scene, float delta_time)
 
     ecs_progress(ecs->handle, delta_time);
 }
+
+void engine_scene_handle_event(EngineScene* scene, const Event* event)
+{
+    // For now, we don't have any event handling in the scene, but this function can be used
+}

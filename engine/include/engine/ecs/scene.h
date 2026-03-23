@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include "engine/events/events.h"
+
 #define engine_entity_add(entity, T) (T*)engine_entity_add_component(entity, sizeof(T), #T)
 
 #define engine_entity_get(entity, T) ((const T*)engine_entity_get_component(entity, #T))
@@ -27,3 +29,5 @@ void* engine_entity_add_component(EngineEntity entity, size_t component_size,
 const void* engine_entity_get_component(EngineEntity entity, const char* component_name);
 
 void engine_scene_update(EngineScene* scene, float delta_time);
+
+void engine_scene_handle_event(EngineScene* scene, const Event* event);

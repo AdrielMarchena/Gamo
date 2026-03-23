@@ -252,6 +252,11 @@ bool engine_window_should_close(EngineWindow* window)
     return glfwWindowShouldClose(window->handle);
 }
 
+void engine_window_set_should_close(EngineWindow* window, bool should_close)
+{
+    glfwSetWindowShouldClose(window->handle, should_close);
+}
+
 void engine_window_swap_buffers(EngineWindow* window)
 {
     glfwSwapBuffers(window->handle);
