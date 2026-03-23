@@ -33,7 +33,7 @@ static inline void process_critical_events(const EngineApp* app, Event* event)
 static inline void process_and_dispatch_events(const EngineApp* app)
 {
     Engine* engine = app->engine;
-    Event event;
+    Event event = {0};
 
     while (engine_event_queue_pop(engine->event_queue, &event))
     {

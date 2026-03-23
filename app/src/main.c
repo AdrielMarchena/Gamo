@@ -1,6 +1,7 @@
 #include "engine/application/application.h"
 #include "ui/nuklear_context.h"
 
+#include "engine/general/logger.h"
 #include "engine/ecs/components/transform.h"
 #include "engine/ecs/components/mesh.h"
 #include "engine/ecs/components/texture.h"
@@ -44,17 +45,30 @@ static void ui_update(EngineLayer* layer, UpdateData update_data)
 
 static void app_shutdown(void) {}
 
+static void handle_event_ui(EngineLayer* layer, Event* event)
+{
+    event->handled = false;
+}
+
+static void handle_event(EngineLayer* layer, Event* event)
+{
+    event->handled = false;
+}
+
 int main(void)
 {
     EngineApp* app = engine_create_app(NULL, app_shutdown);
 
     EngineLayer ui_layer = {
         .on_update = ui_update,
+        .on_event = handle_event_ui,
+
     };
     engine_push_ui_layer(app, &ui_layer);
 
     EngineLayer layer = {
         .on_create = on_create,
+        .on_event = handle_event,
     };
     engine_push_layer(app, &layer);
 
