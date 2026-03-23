@@ -43,8 +43,6 @@ static void ui_update(EngineLayer* layer, UpdateData update_data)
     render_app_ui(ctx, update_data);
 }
 
-static void app_shutdown(void) {}
-
 static void handle_event_ui(EngineLayer* layer, Event* event)
 {
     event->handled = false;
@@ -57,7 +55,7 @@ static void handle_event(EngineLayer* layer, Event* event)
 
 int main(void)
 {
-    EngineApp* app = engine_create_app(NULL, app_shutdown);
+    EngineApp* app = engine_create_app(NULL, NULL);
 
     EngineLayer ui_layer = {
         .on_update = ui_update,
