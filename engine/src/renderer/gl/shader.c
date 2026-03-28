@@ -8,6 +8,7 @@
 
 #include "shader_uniforms.h"
 #include "shader_registry.h"
+#include "gl_check.h"
 
 #include <dirent.h>
 #include <string.h>
@@ -19,52 +20,55 @@ Shader* engine_gl_shader_create(const char* vertex_source, const char* fragment_
 {
     Shader* shader = engine_alloc(sizeof(Shader));
 
-    GLuint vprog = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vprog, 1, &vertex_source, NULL);
-    glCompileShader(vprog);
+    GLuint vprog = 0;
+    GL_CHECK(vprog = glCreateShader(GL_VERTEX_SHADER));
+    GL_CHECK(glShaderSource(vprog, 1, &vertex_source, NULL));
+    GL_CHECK(glCompileShader(vprog));
 
-    GLuint fprog = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fprog, 1, &fragment_source, NULL);
-    glCompileShader(fprog);
+    GLuint fprog = 0;
+    GL_CHECK(fprog = glCreateShader(GL_FRAGMENT_SHADER));
+    GL_CHECK(glShaderSource(fprog, 1, &fragment_source, NULL));
+    GL_CHECK(glCompileShader(fprog));
 
-    shader->id = glCreateProgram();
-    glAttachShader(shader->id, vprog);
-    glAttachShader(shader->id, fprog);
-    glLinkProgram(shader->id);
+    GL_CHECK(shader->id = glCreateProgram());
+    GL_CHECK(glAttachShader(shader->id, vprog));
+    GL_CHECK(glAttachShader(shader->id, fprog));
+    GL_CHECK(glLinkProgram(shader->id));
 
-    glDeleteShader(vprog);
-    glDeleteShader(fprog);
+    GL_CHECK(glDeleteShader(vprog));
+    GL_CHECK(glDeleteShader(fprog));
 
-    shader->loc_model = glGetUniformLocation(shader->id, U_MODEL);
-    shader->loc_view = glGetUniformLocation(shader->id, U_VIEW);
-    shader->loc_projection = glGetUniformLocation(shader->id, U_PROJECTION);
+    GL_CHECK(shader->loc_model = glGetUniformLocation(shader->id, U_MODEL));
+    GL_CHECK(shader->loc_view = glGetUniformLocation(shader->id, U_VIEW));
+    GL_CHECK(shader->loc_projection = glGetUniformLocation(shader->id, U_PROJECTION));
 
-    shader->loc_texture = glGetUniformLocation(shader->id, U_TEXTURE);
-    shader->loc_color = glGetUniformLocation(shader->id, U_COLOR);
+    GL_CHECK(shader->loc_texture = glGetUniformLocation(shader->id, U_TEXTURE));
+    GL_CHECK(shader->loc_color = glGetUniformLocation(shader->id, U_COLOR));
 
     return shader;
 }
 
 void engine_gl_shader_destroy(Shader* shader)
 {
-    glDeleteProgram(shader->id);
+    GL_CHECK(glDeleteProgram(shader->id));
     engine_free(shader);
 }
 
 void engine_gl_shader_set_uniform_mat4(Shader* shader, const char* name, const mat4* matrix)
 {
-    glUniformMatrix4fv(glGetUniformLocation(shader->id, name), 1, GL_FALSE, (const GLfloat*)matrix);
+    GL_CHECK(glUniformMatrix4fv(glGetUniformLocation(shader->id, name), 1, GL_FALSE,
+                                (const GLfloat*)matrix));
 }
 
 void engine_gl_shader_bind(const Shader* shader)
 {
     assert(shader != NULL);
-    glUseProgram(shader->id);
+    GL_CHECK(glUseProgram(shader->id));
 }
 
 void engine_gl_shader_unbind(void)
 {
-    glUseProgram(0);
+    GL_CHECK(glUseProgram(0));
 }
 
 Shader* engine_gl_shader_create_from_files(const char* vertex_path, const char* fragment_path)
@@ -106,7 +110,7 @@ void engine_gl_shader_set_model(Shader* shader, const mat4* model)
         engine_log_warning("Model uniform not found in shader (ID: %u)\n", shader->id);
         return;
     }
-    glUniformMatrix4fv(shader->loc_model, 1, GL_FALSE, (const GLfloat*)model);
+    GL_CHECK(glUniformMatrix4fv(shader->loc_model, 1, GL_FALSE, (const GLfloat*)model));
 }
 
 void engine_gl_shader_set_view(Shader* shader, const mat4* view)
@@ -116,7 +120,7 @@ void engine_gl_shader_set_view(Shader* shader, const mat4* view)
         engine_log_warning("View uniform not found in shader (ID: %u)\n", shader->id);
         return;
     }
-    glUniformMatrix4fv(shader->loc_view, 1, GL_FALSE, (const GLfloat*)view);
+    GL_CHECK(glUniformMatrix4fv(shader->loc_view, 1, GL_FALSE, (const GLfloat*)view));
 }
 
 void engine_gl_shader_set_projection(Shader* shader, const mat4* projection)
@@ -126,7 +130,7 @@ void engine_gl_shader_set_projection(Shader* shader, const mat4* projection)
         engine_log_warning("Projection uniform not found in shader (ID: %u)\n", shader->id);
         return;
     }
-    glUniformMatrix4fv(shader->loc_projection, 1, GL_FALSE, (const GLfloat*)projection);
+    GL_CHECK(glUniformMatrix4fv(shader->loc_projection, 1, GL_FALSE, (const GLfloat*)projection));
 }
 
 void engine_gl_shader_set_texture(Shader* shader, const Texture* texture)
@@ -136,7 +140,7 @@ void engine_gl_shader_set_texture(Shader* shader, const Texture* texture)
         engine_log_warning("Texture uniform not found in shader (ID: %u)\n", shader->id);
         return;
     }
-    glUniform1i(shader->loc_texture, 0); // Texture unit 0
+    GL_CHECK(glUniform1i(shader->loc_texture, 0)); // Texture unit 0
 }
 
 void engine_gl_shader_set_color(Shader* shader, const vec4* color)
@@ -145,7 +149,7 @@ void engine_gl_shader_set_color(Shader* shader, const vec4* color)
     {
         return;
     }
-    glUniform4fv(shader->loc_color, 1, (const GLfloat*)color);
+    GL_CHECK(glUniform4fv(shader->loc_color, 1, (const GLfloat*)color));
 }
 
 void shader_load_all_from_directory(const char* directory)

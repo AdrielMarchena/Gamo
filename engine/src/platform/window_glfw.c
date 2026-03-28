@@ -5,6 +5,7 @@
 #include "engine/general/engine_alloc.h"
 #include "engine/general/logger.h"
 #include "engine/platform/window.h"
+#include "../renderer/gl/gl_check.h"
 #include "engine/ui/ui.h"
 
 #include "glad/glad.h"
@@ -304,7 +305,7 @@ void engine_window_context_set_ui_user_pointer(WindowContext* context, void* ui_
 
 void engine_gl_basic_clear_for_test()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    GL_CHECK(glClear(GL_COLOR_BUFFER_BIT));
 }
 
 static void glfw_window_size_callback(GLFWwindow* window, int width, int height)

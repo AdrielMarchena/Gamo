@@ -8,6 +8,7 @@
 #include "cglm/types.h"
 #include "glad/glad.h"
 
+#include "gl/gl_check.h"
 #include "gl/vertex_array.h"
 #include "gl/shader.h"
 #include "gl/shader_registry.h"
@@ -15,21 +16,11 @@
 
 static unsigned int gl_clear_flags = GL_COLOR_BUFFER_BIT;
 
-static void check_gl_error(const char* file, int line)
-{
-    GLenum err;
-    while ((err = glGetError()) != GL_NO_ERROR)
-    {
-        fprintf(stderr, "OpenGL error in %s at line %d: %d\n", file, line, err);
-    }
-}
-
 static EngineCamera* current_camera = NULL;
 
 void engine_renderer_clear_color(EngineRenderer* renderer)
 {
-    glClear(gl_clear_flags);
-    check_gl_error(__FILE__, __LINE__);
+    GL_CHECK(glClear(gl_clear_flags));
 }
 
 EngineRenderer* engine_renderer_init(EngineWindow* window, EngineUI* ui_context)
@@ -50,8 +41,7 @@ EngineRenderer* engine_renderer_init(EngineWindow* window, EngineUI* ui_context)
 
     shader_load_all_from_directory("shaders");
 
-    glDisable(GL_DEPTH_TEST);
-    check_gl_error(__FILE__, __LINE__);
+    GL_CHECK(glDisable(GL_DEPTH_TEST));
 
     renderer->initialized = 1;
     return renderer;
@@ -67,10 +57,8 @@ void engine_renderer_begin(EngineRenderer* renderer)
 
     engine_gl_shader_bind(shader);
     engine_gl_shader_set_projection(shader, projection);
-    check_gl_error(__FILE__, __LINE__);
 
     engine_gl_shader_set_view(shader, view);
-    check_gl_error(__FILE__, __LINE__);
 }
 
 void engine_renderer_end(EngineRenderer* renderer) {}
@@ -83,23 +71,19 @@ void engine_renderer_shutdown(EngineRenderer* renderer)
 
 void engine_renderer_draw_mesh(EngineRenderer* renderer, const mat4* model, const Mesh* mesh)
 {
-    check_gl_error(__FILE__, __LINE__);
     Shader* shader = engine_shader_registry_get("basic");
     engine_gl_shader_bind(shader);
 
     engine_gl_shader_set_model(shader, model);
 
     engine_gl_vertex_array_bind(&mesh->vao);
-    check_gl_error(__FILE__, __LINE__);
 
-    glDrawElements(GL_TRIANGLES, (GLsizei)mesh->index_count, GL_UNSIGNED_INT, 0);
-    check_gl_error(__FILE__, __LINE__);
+    GL_CHECK(glDrawElements(GL_TRIANGLES, (GLsizei)mesh->index_count, GL_UNSIGNED_INT, 0));
 }
 
 void engine_renderer_draw_mesh_with_texture(EngineRenderer* renderer, const mat4* model,
                                             const Mesh* mesh, Texture* texture, const vec4* color)
 {
-    check_gl_error(__FILE__, __LINE__);
     Shader* shader = engine_shader_registry_get("basic");
     engine_gl_shader_bind(shader);
 
@@ -111,16 +95,13 @@ void engine_renderer_draw_mesh_with_texture(EngineRenderer* renderer, const mat4
     engine_gl_shader_set_color(shader, color);
 
     engine_gl_vertex_array_bind(&mesh->vao);
-    check_gl_error(__FILE__, __LINE__);
 
-    glDrawElements(GL_TRIANGLES, (GLsizei)mesh->index_count, GL_UNSIGNED_INT, 0);
-    check_gl_error(__FILE__, __LINE__);
+    GL_CHECK(glDrawElements(GL_TRIANGLES, (GLsizei)mesh->index_count, GL_UNSIGNED_INT, 0));
 }
 
 void engine_renderer_resize(EngineRenderer* renderer, int width, int height)
 {
-    glViewport(0, 0, width, height);
-    check_gl_error(__FILE__, __LINE__);
+    GL_CHECK(glViewport(0, 0, width, height));
 
     if (current_camera)
     {
@@ -132,8 +113,7 @@ void engine_renderer_resize(EngineRenderer* renderer, int width, int height)
 void engine_renderer_set_clear_color(EngineRenderer* renderer, float red, float green, float blue,
                                      float alpha)
 {
-    glClearColor(red, green, blue, alpha);
-    check_gl_error(__FILE__, __LINE__);
+    GL_CHECK(glClearColor(red, green, blue, alpha));
 }
 
 void engine_renderer_handle_ui_input(EngineRenderer* renderer)
