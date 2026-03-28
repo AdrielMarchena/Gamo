@@ -15,13 +15,6 @@
 
 static unsigned int gl_clear_flags = GL_COLOR_BUFFER_BIT;
 
-typedef struct EngineRenderer
-{
-    // Renderer state and resources can be added here
-    uint8_t initialized;
-    EngineUI* ui_context;
-} EngineRenderer;
-
 static void check_gl_error(const char* file, int line)
 {
     GLenum err;

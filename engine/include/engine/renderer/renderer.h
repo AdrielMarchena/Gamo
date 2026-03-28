@@ -1,6 +1,7 @@
 #pragma once
 
 #include "engine/platform/window.h"
+#include "engine/renderer/framebuffer.h"
 #include "engine/renderer/texture.h"
 #include "engine/ui/ui.h"
 
@@ -12,7 +13,12 @@
 
 #include "engine/ecs/components/camera.h"
 
-typedef struct EngineRenderer EngineRenderer;
+typedef struct
+{
+    uint8_t initialized;
+    EngineUI* ui_context;
+    Framebuffer* scene_target;
+} EngineRenderer;
 
 // Renderer API
 
