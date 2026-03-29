@@ -11,8 +11,8 @@ typedef struct
     int32_t height;
 } Framebuffer;
 
-Framebuffer framebuffer_create(int32_t width, int32_t height);
-void framebuffer_resize(Framebuffer* framebuffer, int width, int height);
-void framebuffer_destroy(Framebuffer* framebuffer);
-void framebuffer_bind(const Framebuffer* framebuffer);
-void framebuffer_unbind();
+Framebuffer* engine_framebuffer_create(int32_t width, int32_t height);
+void engine_framebuffer_resize(Framebuffer* framebuffer, int width, int height);
+void engine_framebuffer_destroy(Framebuffer* framebuffer);
+void engine_framebuffer_bind(const Framebuffer* framebuffer);
+void engine_framebuffer_unbind();

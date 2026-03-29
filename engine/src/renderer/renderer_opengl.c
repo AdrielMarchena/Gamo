@@ -1,6 +1,8 @@
 #include "engine/ecs/components/camera.h"
+#include "engine/general/assert.h"
 #include "engine/general/engine_alloc.h"
 #include "engine/platform/window.h"
+#include "engine/renderer/framebuffer.h"
 #include "engine/renderer/renderer.h"
 #include "engine/renderer/texture.h"
 #include "engine/ui/ui.h"
@@ -25,6 +27,9 @@ void engine_renderer_clear_color(EngineRenderer* renderer)
 
 EngineRenderer* engine_renderer_init(EngineWindow* window, EngineUI* ui_context)
 {
+    ENGINE_ASSERT(window != NULL, "Window pointer is NULL");
+    ENGINE_ASSERT(ui_context != NULL, "UI context pointer is NULL");
+
     EngineRenderer* renderer = engine_alloc(sizeof(EngineRenderer));
 
     if (!renderer)
@@ -34,12 +39,35 @@ EngineRenderer* engine_renderer_init(EngineWindow* window, EngineUI* ui_context)
 
     renderer->ui_context = ui_context;
 
+    EngineWindowRectSize window_size = engine_window_get_size(window);
+
     current_camera = engine_camera_create();
-    engine_camera_set_orthographic(current_camera, 0.0f, (float)800, (float)600, 0.0f, -1.0f, 1.0f);
+    engine_camera_set_orthographic(current_camera, 0.0f, (float)window_size.width,
+                                   (float)window_size.height, 0.0f, -1.0f, 1.0f);
 
     engine_shader_registry_init();
 
     shader_load_all_from_directory("shaders");
+
+    renderer->scene_target = engine_framebuffer_create(window_size.width, window_size.height);
+    // Temp
+    renderer->present_quad = engine_mesh_create(
+        (float[]){
+            0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+            1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+        },
+        20,
+        (unsigned int[]){
+            0,
+            1,
+            2,
+            2,
+            3,
+            0,
+        },
+        6);
+
+    ENGINE_ASSERT(renderer->present_quad != NULL, "Failed to create present quad mesh");
 
     GL_CHECK(glDisable(GL_DEPTH_TEST));
 
@@ -65,7 +93,15 @@ void engine_renderer_end(EngineRenderer* renderer) {}
 
 void engine_renderer_shutdown(EngineRenderer* renderer)
 {
+    if (renderer && renderer->present_quad)
+    {
+        // Temp
+        engine_mesh_destroy(renderer->present_quad);
+        renderer->present_quad = NULL;
+    }
+
     engine_shader_registry_destroy();
+    engine_framebuffer_destroy(renderer->scene_target);
     engine_free(renderer);
 }
 
@@ -108,6 +144,7 @@ void engine_renderer_resize(EngineRenderer* renderer, int width, int height)
         engine_camera_set_orthographic(current_camera, 0.0f, (float)width, (float)height, 0.0f,
                                        -1.0f, 1.0f);
     }
+    engine_framebuffer_resize(renderer->scene_target, width, height);
 }
 
 void engine_renderer_set_clear_color(EngineRenderer* renderer, float red, float green, float blue,
@@ -124,4 +161,31 @@ void engine_renderer_handle_ui_input(EngineRenderer* renderer)
 void engine_renderer_draw_ui(EngineRenderer* renderer)
 {
     engine_ui_render(renderer->ui_context);
+}
+
+void engine_renderer_present(EngineRenderer* renderer)
+{
+    ENGINE_ASSERT(renderer != NULL, "Renderer pointer is NULL");
+    ENGINE_ASSERT(renderer->scene_target != NULL, "Scene target framebuffer is NULL");
+    ENGINE_ASSERT(renderer->present_quad != NULL, "Present quad mesh is NULL");
+
+    engine_framebuffer_unbind();
+    engine_renderer_begin(renderer);
+
+    Texture scene_texture = {
+        .id = renderer->scene_target->color_attachment,
+        .width = renderer->scene_target->width,
+        .height = renderer->scene_target->height,
+        .channels = 3,
+    };
+
+    mat4 model;
+    glm_mat4_identity(model);
+    glm_scale(model, (vec3){(float)renderer->scene_target->width,
+                            (float)renderer->scene_target->height, 1.0f});
+
+    const vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
+
+    engine_renderer_draw_mesh_with_texture(renderer, &model, renderer->present_quad, &scene_texture,
+                                           &color);
 }

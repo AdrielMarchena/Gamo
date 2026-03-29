@@ -303,9 +303,17 @@ void engine_window_context_set_ui_user_pointer(WindowContext* context, void* ui_
     context->ui_user_pointer = ui_user_pointer;
 }
 
-void engine_gl_basic_clear_for_test()
+EngineWindowRectSize engine_window_get_size(EngineWindow* window)
 {
-    GL_CHECK(glClear(GL_COLOR_BUFFER_BIT));
+    EngineWindowRectSize size = {0, 0};
+    if (!window)
+    {
+        engine_log_warning("Window is null");
+        return size;
+    }
+
+    glfwGetWindowSize(window->handle, &size.width, &size.height);
+    return size;
 }
 
 static void glfw_window_size_callback(GLFWwindow* window, int width, int height)

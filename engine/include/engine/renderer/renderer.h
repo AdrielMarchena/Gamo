@@ -18,6 +18,8 @@ typedef struct
     uint8_t initialized;
     EngineUI* ui_context;
     Framebuffer* scene_target;
+    // Temp
+    Mesh* present_quad;
 } EngineRenderer;
 
 // Renderer API
@@ -52,3 +54,8 @@ void engine_renderer_clear_color(EngineRenderer* renderer);
 
 void engine_renderer_handle_ui_input(EngineRenderer* renderer);
 void engine_renderer_draw_ui(EngineRenderer* renderer);
+
+// Temp function, it basically make a entire render cycle, but rendering the framebuffer texture to
+// the screen. This is used for now to test the framebuffer, but it will be removed later when we
+// have a proper render loop and render graph in place.
+void engine_renderer_present(EngineRenderer* renderer);
