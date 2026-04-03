@@ -34,7 +34,8 @@ static void on_create(EngineLayer* layer)
 
     MeshComponent* mesh = engine_entity_add(entity, MeshComponent);
 
-    mesh->mesh = engine_mesh_create(vertices, sizeof(vertices), indices, sizeof(indices));
+    mesh->mesh = engine_mesh_create(vertices, sizeof(vertices) / sizeof(vertices[0]), indices,
+                                    sizeof(indices) / sizeof(indices[0]));
 }
 
 static void ui_update(EngineLayer* layer, UpdateData update_data)

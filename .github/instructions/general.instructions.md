@@ -1,7 +1,7 @@
 # General Project Instructions
 
 ## Language and Build System
-- Language: C (C17)
+- Language: C (C23)
 - Build system: CMake
 - Architecture: engine (static library) + app (executable)
 - Development platform: Linux (Fedora KDE)

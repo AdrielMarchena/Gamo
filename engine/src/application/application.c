@@ -95,6 +95,8 @@ EngineApp* engine_create_app(bool (*init)(void), void (*shutdown)(void))
     Engine* engine = engine_create();
 
     app->engine = engine;
+    app->layer_stack.count = 0;
+    app->layer_stack.ui_count = 0;
 
     return app;
 }

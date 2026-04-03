@@ -1,13 +1,13 @@
 # Gamo
 
-Gamo is a cross-platform game engine written in **C (C17)** and built with **CMake**.  
+Gamo is a cross-platform game engine written in **C (C23)** and built with **CMake**.  
 It follows a clean **engine / app architecture**, uses **GLFW** for windowing, and is designed to explore low-level engine patterns without relying on C++ abstractions.
 
 ---
 
 ## Features
 
-- C17
+- C23
 - Cross-platform architecture (Linux supported, Windows planned)
 - CMake build system
 - Engine and App separation
