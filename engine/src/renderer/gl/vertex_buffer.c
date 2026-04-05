@@ -5,21 +5,26 @@
 
 #include "glad/glad.h"
 
-VertexBuffer* engine_gl_vertex_buffer_create(const void* data, size_t size)
+VertexBuffer engine_gl_vertex_buffer_create(const void* data, size_t size)
 {
-    VertexBuffer* vertex_buffer = engine_alloc(sizeof(VertexBuffer));
-    vertex_buffer->type = GL_ARRAY_BUFFER;
+    VertexBuffer vertex_buffer = {
+        .id = 0,
+        .type = GL_ARRAY_BUFFER,
+        .size = size,
+    };
 
-    GL_CHECK(glGenBuffers(1, &vertex_buffer->id));
-    GL_CHECK(glBindBuffer(vertex_buffer->type, vertex_buffer->id));
-    GL_CHECK(glBufferData(vertex_buffer->type, (GLsizeiptr)size, data, GL_STATIC_DRAW));
+    GL_CHECK(glGenBuffers(1, &vertex_buffer.id));
+    GL_CHECK(glBindBuffer(vertex_buffer.type, vertex_buffer.id));
+    GL_CHECK(glBufferData(vertex_buffer.type, (GLsizeiptr)size, data, GL_STATIC_DRAW));
     return vertex_buffer;
 }
 
 void engine_gl_vertex_buffer_destroy(VertexBuffer* vertex_buffer)
 {
     GL_CHECK(glDeleteBuffers(1, &vertex_buffer->id));
-    engine_free(vertex_buffer);
+    vertex_buffer->id = 0;
+    vertex_buffer->type = 0;
+    vertex_buffer->size = 0;
 }
 
 void engine_gl_vertex_buffer_bind(const VertexBuffer* vertex_buffer)
@@ -36,4 +41,6 @@ void engine_gl_vertex_buffer_update(VertexBuffer* vertex_buffer, const void* dat
 {
     GL_CHECK(glBindBuffer(vertex_buffer->type, vertex_buffer->id));
     GL_CHECK(glBufferSubData(vertex_buffer->type, 0, (GLsizeiptr)size, data));
+
+    vertex_buffer->size = size;
 }
