@@ -1,11 +1,12 @@
 #pragma once
 
-#include "glad/glad.h"
+#include <stdint.h>
+#include <stddef.h>
 
 typedef struct VertexBuffer
 {
-    GLuint id;
-    GLenum type;
+    uint32_t id;
+    uint32_t type;
     size_t size;
 } VertexBuffer;
 

@@ -1,15 +1,16 @@
 #pragma once
 
-#include <glad/glad.h>
+#include <stdint.h>
+#include <stddef.h>
 
 typedef struct ElementArrayBuffer
 {
-    GLuint id;
-    GLenum type;
-    GLsizeiptr size;
+    uint32_t id;
+    uint32_t type;
+    size_t size;
 } ElementArrayBuffer;
 
-ElementArrayBuffer* engine_gl_element_array_buffer_create(const void* data, size_t size);
+ElementArrayBuffer engine_gl_element_array_buffer_create(const void* data, size_t size);
 void engine_gl_element_array_buffer_destroy(ElementArrayBuffer* element_array_buffer);
 void engine_gl_element_array_buffer_bind(const ElementArrayBuffer* element_array_buffer);
 void engine_gl_element_array_buffer_unbind(void);

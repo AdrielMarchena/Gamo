@@ -1,4 +1,4 @@
-#include "vertex_array.h"
+#include "engine/renderer/vertex_array.h"
 #include "gl_check.h"
 
 #include "engine/general/engine_alloc.h"

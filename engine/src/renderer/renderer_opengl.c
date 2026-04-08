@@ -11,10 +11,10 @@
 #include "glad/glad.h"
 
 #include "gl/gl_check.h"
-#include "gl/vertex_array.h"
+#include "engine/renderer/vertex_array.h"
 #include "gl/shader.h"
 #include "gl/shader_registry.h"
-#include "mesh_opengl.h"
+#include "engine/renderer/mesh.h"
 
 static unsigned int gl_clear_flags = GL_COLOR_BUFFER_BIT;
 
@@ -42,8 +42,8 @@ EngineRenderer* engine_renderer_init(EngineWindow* window, EngineUI* ui_context)
     EngineWindowRectSize window_size = engine_window_get_size(window);
 
     current_camera = engine_camera_create();
-    engine_camera_set_orthographic(current_camera, 0.0f, (float)window_size.width,
-                                   (float)window_size.height, 0.0f, -1.0f, 1.0f);
+    engine_camera_set_orthographic(current_camera, 0.0f, (float)window_size.width, 0.0f,
+                                   (float)window_size.height, -1.0f, 1.0f);
 
     engine_shader_registry_init();
 
@@ -51,23 +51,9 @@ EngineRenderer* engine_renderer_init(EngineWindow* window, EngineUI* ui_context)
 
     renderer->scene_target = engine_framebuffer_create(window_size.width, window_size.height);
     // Temp
-    renderer->present_quad = engine_mesh_create(
-        (float[]){
-            0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-            1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-        },
-        20,
-        (unsigned int[]){
-            0,
-            1,
-            2,
-            2,
-            3,
-            0,
-        },
-        6);
+    renderer->present_quad = engine_mesh_create_quad();
 
-    ENGINE_ASSERT(renderer->present_quad != NULL, "Failed to create present quad mesh");
+    ENGINE_ASSERT(renderer->present_quad.index_count != 0, "Failed to create present quad mesh");
 
     GL_CHECK(glDisable(GL_DEPTH_TEST));
 
@@ -93,16 +79,19 @@ void engine_renderer_end(EngineRenderer* renderer) {}
 
 void engine_renderer_shutdown(EngineRenderer* renderer)
 {
-    if (renderer && renderer->present_quad)
+    if (renderer)
     {
-        // Temp
-        engine_mesh_destroy(renderer->present_quad);
-        renderer->present_quad = NULL;
-    }
+        engine_shader_registry_destroy();
+        engine_framebuffer_destroy(renderer->scene_target);
 
-    engine_shader_registry_destroy();
-    engine_framebuffer_destroy(renderer->scene_target);
-    engine_free(renderer);
+        if (renderer->present_quad.index_count != 0)
+        {
+            // Temp
+            engine_mesh_destroy_quad(&renderer->present_quad);
+        }
+
+        engine_free(renderer);
+    }
 }
 
 void engine_renderer_draw_mesh(EngineRenderer* renderer, const mat4* model, const Mesh* mesh)
@@ -141,7 +130,7 @@ void engine_renderer_resize(EngineRenderer* renderer, int width, int height)
 
     if (current_camera)
     {
-        engine_camera_set_orthographic(current_camera, 0.0f, (float)width, (float)height, 0.0f,
+        engine_camera_set_orthographic(current_camera, 0.0f, (float)width, 0.0f, (float)height,
                                        -1.0f, 1.0f);
     }
     engine_framebuffer_resize(renderer->scene_target, width, height);
@@ -167,7 +156,7 @@ void engine_renderer_present(EngineRenderer* renderer)
 {
     ENGINE_ASSERT(renderer != NULL, "Renderer pointer is NULL");
     ENGINE_ASSERT(renderer->scene_target != NULL, "Scene target framebuffer is NULL");
-    ENGINE_ASSERT(renderer->present_quad != NULL, "Present quad mesh is NULL");
+    ENGINE_ASSERT(renderer->present_quad.index_count != 0, "Present quad mesh is NULL");
 
     engine_framebuffer_unbind();
     engine_renderer_begin(renderer);
@@ -181,11 +170,19 @@ void engine_renderer_present(EngineRenderer* renderer)
 
     mat4 model;
     glm_mat4_identity(model);
+
+    // Translate to viewport center, then scale
+    // Quad vertices are -0.5 to 0.5, so after scaling by window size they'd be off-screen.
+    // We need to place them in the visible area.
+    float center_x = (float)renderer->scene_target->width / 2.0f;
+    float center_y = (float)renderer->scene_target->height / 2.0f;
+
+    glm_translate(model, (vec3){center_x, center_y, 0.0f});
     glm_scale(model, (vec3){(float)renderer->scene_target->width,
-                            (float)renderer->scene_target->height, 1.0f});
+                            -(float)renderer->scene_target->height, 1.0f});
 
     const vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
 
-    engine_renderer_draw_mesh_with_texture(renderer, &model, renderer->present_quad, &scene_texture,
-                                           &color);
+    engine_renderer_draw_mesh_with_texture(renderer, &model, &renderer->present_quad,
+                                           &scene_texture, &color);
 }

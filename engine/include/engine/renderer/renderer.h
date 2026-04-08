@@ -19,7 +19,7 @@ typedef struct
     EngineUI* ui_context;
     Framebuffer* scene_target;
     // Temp
-    Mesh* present_quad;
+    Mesh present_quad;
 } EngineRenderer;
 
 // Renderer API

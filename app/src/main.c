@@ -7,11 +7,6 @@
 #include "engine/ecs/components/texture.h"
 #include "engine/renderer/mesh.h"
 
-float vertices[] = {-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.5f,  -0.5f, 0.0f, 1.0f, 0.0f,
-                    0.5f,  0.5f,  0.0f, 1.0f, 1.0f, -0.5f, 0.5f,  0.0f, 0.0f, 1.0f};
-
-unsigned int indices[] = {0, 1, 2, 2, 3, 0};
-
 static void on_create(EngineLayer* layer)
 {
     EngineApp* app = engine_get_current_app();
@@ -20,9 +15,15 @@ static void on_create(EngineLayer* layer)
     TransformComponent* trans = engine_entity_add(entity, TransformComponent);
     trans->translation[0] = 300.0F;
     trans->translation[1] = 200.0F;
+    trans->translation[2] = 0.0F;
+
+    trans->rotation[0] = 0.0F;
+    trans->rotation[1] = 0.0F;
+    trans->rotation[2] = 0.0F;
 
     trans->scale[0] = 100.0F;
     trans->scale[1] = -100.0F;
+    trans->scale[2] = 1.0F;
 
     TextureComponent* texture = engine_entity_add(entity, TextureComponent);
     texture->texture = engine_texture_load("assets/gato.jpg");
@@ -34,9 +35,11 @@ static void on_create(EngineLayer* layer)
 
     MeshComponent* mesh = engine_entity_add(entity, MeshComponent);
 
-    mesh->mesh = engine_mesh_create(vertices, sizeof(vertices) / sizeof(vertices[0]), indices,
-                                    sizeof(indices) / sizeof(indices[0]));
+    // Clean up this, it is just for testing purposes
+    mesh->mesh = engine_mesh_create_quad();
 }
+
+static void on_destroy(EngineLayer* layer) {}
 
 static void ui_update(EngineLayer* layer, UpdateData update_data)
 {
@@ -66,9 +69,7 @@ int main(void)
     engine_push_ui_layer(app, &ui_layer);
 
     EngineLayer layer = {
-        .on_create = on_create,
-        .on_event = handle_event,
-    };
+        .on_create = on_create, .on_event = handle_event, .on_destroy = on_destroy};
     engine_push_layer(app, &layer);
 
     return engine_run(app);

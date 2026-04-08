@@ -1,4 +1,4 @@
-#include "vertex_buffer.h"
+#include "engine/renderer/vertex_buffer.h"
 #include "gl_check.h"
 
 #include "engine/general/engine_alloc.h"

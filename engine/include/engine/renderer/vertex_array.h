@@ -1,11 +1,11 @@
 #pragma once
 
-#include <glad/glad.h>
+#include <stdint.h>
 
 typedef struct VertexArray
 {
-    GLuint id;
-    GLenum type;
+    uint32_t id;
+    uint32_t type;
 } VertexArray;
 
 VertexArray engine_gl_vertex_array_create(void);

@@ -4,5 +4,5 @@
 
 typedef struct
 {
-    const Mesh* mesh;
+    Mesh mesh;
 } MeshComponent;
