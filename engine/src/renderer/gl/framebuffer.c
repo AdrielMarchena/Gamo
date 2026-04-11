@@ -1,6 +1,7 @@
 #include "engine/renderer/framebuffer.h"
 #include "engine/general/engine_alloc.h"
 #include "engine/general/assert.h"
+#include "engine/general/logger.h"
 #include "gl_check.h"
 
 #include "glad/glad.h"

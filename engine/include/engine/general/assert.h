@@ -16,6 +16,6 @@
 #define ENGINE_ASSERT(cond, msg)                                                                   \
     do                                                                                             \
     {                                                                                              \
-        (void)(cond);                                                                              \
+        (void)0;                                                                                   \
     } while (0)
 #endif

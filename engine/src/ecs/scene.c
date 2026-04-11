@@ -1,5 +1,6 @@
 #include "engine/ecs/scene.h"
 #include "engine/general/assert.h"
+#include "engine/general/logger.h"
 #include "engine/general/engine_alloc.h"
 
 #include "engine/ecs/components/transform.h"

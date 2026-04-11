@@ -4,6 +4,8 @@ set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+include(CTest)
+
 # Enable AddressSanitizer for Debug builds
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
     add_compile_options(-fsanitize=address -fno-omit-frame-pointer)

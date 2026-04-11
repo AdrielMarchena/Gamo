@@ -4,6 +4,7 @@
 #include "engine/general/engine_alloc.h"
 
 #include <stdio.h>
+#include <string.h>
 
 char* engine_read_file(const char* path)
 {

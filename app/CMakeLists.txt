@@ -15,6 +15,8 @@ target_include_directories(app PRIVATE
     ${CMAKE_SOURCE_DIR}/vendor/cglm/include
 )
 
+target_compile_features(app PUBLIC c_std_23)
+
 target_compile_definitions(app
     PRIVATE
         $<$<CONFIG:Debug>:APP_DEBUG>
